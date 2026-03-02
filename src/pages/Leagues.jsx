@@ -65,12 +65,9 @@ export default function Leagues() {
   return (
     <div>
       <h1 className="font-display text-2xl font-bold text-[#1B2F1F] sm:text-3xl">
-        Summer ’26 Pilot Program
+        Summer ’26 Pilot Programs
       </h1>
-      <p className="mt-2 text-[#1B2F1F]/80">
-        Phase 1 of our 2026 roadmap: youth flag football and basketball in Brooklyn. We’re proving the concept with a flawless youth program that establishes our brand presence and operational baseline—and gathering content and data to fuel our Adult Intramural Program in Fall/Winter 2026.
-      </p>
-      <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
         {leagues.map((league) => (
           <LeagueCard key={league.id} league={league} />
         ))}
