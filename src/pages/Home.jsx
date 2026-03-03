@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { Trophy, Users, ShieldCheck } from 'lucide-react'
 import { assets } from '../data/images'
 import PilotSignupModal from '../components/PilotSignupModal'
 
@@ -36,6 +37,55 @@ export default function Home() {
           >
             Sign Up for the Summer ’26 Pilot
           </button>
+        </div>
+      </section>
+
+      {/* Brand values / standard */}
+      <section className="py-24">
+        <div className="mx-auto max-w-5xl px-2 text-center">
+          <h2 className="font-display text-2xl font-bold text-[#1B2F1F] sm:text-3xl">
+            The Gamebreakers Standard
+          </h2>
+          <p className="mx-auto mt-3 max-w-2xl text-sm text-[#1B2F1F]/80 sm:text-base">
+            Our leagues blend professional-grade structure with a deeply local, community-first ethos.
+          </p>
+        </div>
+        <div className="mx-auto mt-12 grid max-w-5xl gap-8 px-2 sm:grid-cols-3">
+          <article className="rounded-ui border border-[#E5E5E1] bg-[#FDFCF8] p-6 text-left">
+            <div className="flex h-14 w-14 items-center justify-center rounded-full border border-[#E5E5E1] bg-[#1B2F1F] text-[#FDFCF8]">
+              <Trophy size={28} />
+            </div>
+            <h3 className="mt-4 font-display text-lg font-semibold text-[#1B2F1F]">
+              Elite Standards
+            </h3>
+            <p className="mt-2 text-sm leading-relaxed text-[#1B2F1F]/80">
+              We bring professional-grade coaching and organization to the local community level.
+            </p>
+          </article>
+
+          <article className="rounded-ui border border-[#E5E5E1] bg-[#FDFCF8] p-6 text-left">
+            <div className="flex h-14 w-14 items-center justify-center rounded-full border border-[#E5E5E1] bg-[#1B2F1F] text-[#FDFCF8]">
+              <Users size={28} />
+            </div>
+            <h3 className="mt-4 font-display text-lg font-semibold text-[#1B2F1F]">
+              Community First
+            </h3>
+            <p className="mt-2 text-sm leading-relaxed text-[#1B2F1F]/80">
+              Building more than just athletes; we’re fostering a network of leaders in Brooklyn.
+            </p>
+          </article>
+
+          <article className="rounded-ui border border-[#E5E5E1] bg-[#FDFCF8] p-6 text-left">
+            <div className="flex h-14 w-14 items-center justify-center rounded-full border border-[#E5E5E1] bg-[#1B2F1F] text-[#FDFCF8]">
+              <ShieldCheck size={28} />
+            </div>
+            <h3 className="mt-4 font-display text-lg font-semibold text-[#1B2F1F]">
+              Character &amp; Discipline
+            </h3>
+            <p className="mt-2 text-sm leading-relaxed text-[#1B2F1F]/80">
+              Our programs emphasize integrity and grit, both on and off the court.
+            </p>
+          </article>
         </div>
       </section>
 
