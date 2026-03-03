@@ -1,7 +1,7 @@
 import { Link, useLocation } from 'react-router-dom'
 import { Menu, X } from 'lucide-react'
 import { useState } from 'react'
-import Logo from './Logo'
+import BrandLogo from './BrandLogo'
 
 const navLinks = [
   { to: '/', label: 'Home' },
@@ -20,7 +20,7 @@ export default function Navbar() {
           to="/"
           className="flex items-center gap-2 font-display text-lg font-bold text-[#1B2F1F] transition-colors duration-200 ease-in-out hover:text-[#000000]"
         >
-          <Logo className="h-8 w-8 shrink-0" />
+          <BrandLogo size={32} className="shrink-0" />
           <span>Gamebreakers Academy</span>
         </Link>
 

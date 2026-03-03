@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom'
 import { Instagram, Linkedin } from 'lucide-react'
-import Logo from './Logo'
+import BrandLogo from './BrandLogo'
 
 const navLinks = [
   { to: '/', label: 'Home' },
@@ -25,8 +25,11 @@ export default function Footer() {
         <div className="flex flex-col gap-10 lg:flex-row lg:items-start lg:justify-between">
           {/* Left: Logo & tagline */}
           <div className="max-w-xs">
-            <Link to="/" className="flex items-center gap-2 font-display text-lg font-bold text-[#FDFCF8] transition-opacity hover:opacity-90">
-              <Logo className="h-7 w-7 shrink-0 text-[#FDFCF8]" />
+            <Link
+              to="/"
+              className="flex flex-col items-start gap-3 font-display text-lg font-bold text-[#FDFCF8] transition-opacity hover:opacity-90"
+            >
+              <BrandLogo size={40} className="shrink-0" />
               <span>Gamebreakers Academy</span>
             </Link>
             <p className="mt-2 text-sm text-[#FDFCF8]/80 leading-relaxed">
