@@ -38,6 +38,18 @@ body {
   pointer-events: none;
 }
 
+/* Hero banner: portrait image — mobile center top, desktop center 20% */
+.hero-banner-bg {
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center top;
+}
+@media (min-width: 640px) {
+  .hero-banner-bg {
+    background-position: center 20%;
+  }
+}
+
 /* Page transition */
 .page-enter {
   opacity: 0;

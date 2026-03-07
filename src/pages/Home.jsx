@@ -1,6 +1,5 @@
 import { useState } from 'react'
 import { Trophy, Users, ShieldCheck } from 'lucide-react'
-import { assets } from '../data/images'
 import PilotSignupModal from '../components/PilotSignupModal'
 
 export default function Home() {
@@ -8,16 +7,14 @@ export default function Home() {
 
   return (
     <div className="transition-opacity duration-300 ease-in-out">
-      {/* Hero: local basketball park image, object-cover, 40–50% overlay */}
-      <section className="relative min-h-[70vh] overflow-hidden rounded-ui border border-[#E5E5E1] sm:min-h-[75vh] transition-opacity duration-300">
-        <img
-          src={assets.brooklynBasketballPark}
-          alt=""
-          className="absolute inset-0 h-full w-full object-cover object-center"
-          aria-hidden
-        />
-        <div className="absolute inset-0 bg-[#1B2F1F]/50" aria-hidden />
-        <div className="relative z-10 flex min-h-[70vh] flex-col items-center justify-center px-6 py-16 text-center sm:min-h-[75vh] sm:px-8">
+      {/* Hero: basketball banner — cover, dark overlay, portrait-friendly position */}
+      <section
+        className="hero-banner relative min-h-[600px] min-h-screen overflow-hidden rounded-ui border border-[#E5E5E1] transition-opacity duration-300"
+        aria-label="Hero"
+      >
+        <div className="hero-banner-bg absolute inset-0" style={{ backgroundImage: "url('/images/basketball-banner.jpg')" }} aria-hidden />
+        <div className="absolute inset-0 bg-black/45" aria-hidden />
+        <div className="relative z-10 flex min-h-[600px] min-h-screen flex-col items-center justify-center px-6 py-16 text-center sm:px-8">
           <p className="text-sm font-medium uppercase tracking-wider text-[#FDFCF8]/80">
             By Athletes, For Athletes
           </p>
