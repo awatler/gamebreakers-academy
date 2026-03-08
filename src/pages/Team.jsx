@@ -35,7 +35,6 @@ const team = [
   { name: 'Alex', role: 'Product' },
   { name: 'Jason', role: 'Technology' },
   { name: 'Jarrett', role: 'Operations' },
-  { name: 'Samora', role: 'Operations' },
   { name: 'Keith', role: 'Fitness & Nutrition' },
   { name: 'Wanemi', role: 'Legal & Compliance' },
   { name: 'Will', role: 'Media & Branding' },
