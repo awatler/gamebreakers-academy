@@ -1,25 +1,39 @@
 type BrandLogoProps = {
   size?: number
   className?: string
+  variant?: 'light' | 'dark'
 }
 
 /**
- * BrandLogo
- * GB monogram in a dark stone square with subtle rounded corners.
- * Accepts a `size` prop (in px) so it can scale for navbar/footer/hero use.
+ * BG mark — overlapping B + G per brand kit.
+ * light: black B + green G (navbar, light backgrounds)
+ * dark:  white B + green G (footer, dark backgrounds)
  */
-export default function BrandLogo({ size = 32, className = '' }: BrandLogoProps) {
-  const px = `${size}px`
-  const fontSize = size * 0.45
+export default function BrandLogo({ size = 32, className = '', variant = 'light' }: BrandLogoProps) {
+  const letterSize = size * 0.58
+  const bColor = variant === 'dark' ? 'text-white' : 'text-ink'
+  const gColor = 'text-forest'
 
   return (
     <div
-      style={{ width: px, height: px, fontSize }}
-      className={`flex items-center justify-center rounded-md bg-[#111827] text-[#FDFCF8] font-serif font-extrabold tracking-wide ${className}`}
-      aria-label="Gamebreakers Academy"
+      className={`relative inline-flex shrink-0 items-center justify-center ${className}`}
+      style={{ width: size, height: size }}
+      aria-label="Brooklyn Gamebreakers"
     >
-      <span>GB</span>
+      <span
+        className={`absolute left-0 top-0 z-10 font-display font-bold leading-none ${bColor}`}
+        style={{ fontSize: letterSize }}
+        aria-hidden
+      >
+        B
+      </span>
+      <span
+        className={`absolute z-20 font-display font-bold leading-none ${gColor}`}
+        style={{ fontSize: letterSize, left: size * 0.32, top: size * 0.2 }}
+        aria-hidden
+      >
+        G
+      </span>
     </div>
   )
 }
-

@@ -1,4 +1,4 @@
-/** Minimalist bold "G" silhouette for Gamebreakers Leagues. */
+/** Minimalist bold "G" silhouette for Brooklyn Gamebreakers. */
 export default function Logo({ className = '', ...props }) {
   return (
     <svg

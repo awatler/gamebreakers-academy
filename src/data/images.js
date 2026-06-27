@@ -30,8 +30,3 @@ export const assets = {
   /** Youth Flag Football — female player running, flag belt, B&W (Leagues card). */
   youthFlagFootball: '/images/youth-flag-football.png',
 }
-
-export const leagueImages = {
-  'youth-flag-football-26': assets.youthFlagFootball,
-  'youth-basketball-26': images.basketballGame,
-}
