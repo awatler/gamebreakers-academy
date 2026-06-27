@@ -2,6 +2,10 @@ import crypto from 'crypto'
 
 const CLINIC_TAG = 'Flag Football Clinic - July 2026'
 
+function getEnv(name) {
+  return process.env[name]
+}
+
 function splitName(name) {
   const trimmed = (name || '').trim()
   if (!trimmed) return { FNAME: '', LNAME: '' }
@@ -17,28 +21,31 @@ function getSubscriberHash(email) {
   return crypto.createHash('md5').update(email.toLowerCase()).digest('hex')
 }
 
-export default async function handler(req, res) {
-  if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Method not allowed' })
-  }
-
-  const apiKey = process.env.MAILCHIMP_API_KEY
-  const serverPrefix = process.env.MAILCHIMP_SERVER_PREFIX
-  const audienceId = process.env.MAILCHIMP_AUDIENCE_ID
+export async function POST(request) {
+  const apiKey = getEnv('MAILCHIMP_API_KEY')
+  const serverPrefix = getEnv('MAILCHIMP_SERVER_PREFIX')
+  const audienceId = getEnv('MAILCHIMP_AUDIENCE_ID')
 
   if (!apiKey || !serverPrefix || !audienceId) {
-    return res.status(500).json({ error: 'Mailchimp is not configured.' })
+    return Response.json({ error: 'Mailchimp is not configured.' }, { status: 500 })
   }
 
-  const { name, email, phone, role, age, zip } = req.body || {}
+  let body
+  try {
+    body = await request.json()
+  } catch {
+    return Response.json({ error: 'Invalid request body.' }, { status: 400 })
+  }
+
+  const { name, email, phone, role, age, zip } = body || {}
 
   const trimmedEmail = (email || '').trim()
   if (!trimmedEmail) {
-    return res.status(400).json({ error: 'Email is required to sign up.' })
+    return Response.json({ error: 'Email is required to sign up.' }, { status: 400 })
   }
 
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmedEmail)) {
-    return res.status(400).json({ error: 'Please enter a valid email address.' })
+    return Response.json({ error: 'Please enter a valid email address.' }, { status: 400 })
   }
 
   const { FNAME, LNAME } = splitName(name)
@@ -78,7 +85,10 @@ export default async function handler(req, res) {
       const errBody = await memberRes.json().catch(() => ({}))
       console.error('Mailchimp member error:', memberRes.status, errBody)
       const detail = errBody.detail || errBody.title || 'Could not add you to the list.'
-      return res.status(memberRes.status >= 500 ? 502 : 400).json({ error: detail })
+      return Response.json(
+        { error: detail },
+        { status: memberRes.status >= 500 ? 502 : 400 },
+      )
     }
 
     await fetch(`${memberUrl}/tags`, {
@@ -92,9 +102,9 @@ export default async function handler(req, res) {
       }),
     })
 
-    return res.status(200).json({ success: true })
+    return Response.json({ success: true })
   } catch (err) {
     console.error('Subscribe error:', err)
-    return res.status(500).json({ error: 'Something went wrong. Please try again.' })
+    return Response.json({ error: 'Something went wrong. Please try again.' }, { status: 500 })
   }
 }
