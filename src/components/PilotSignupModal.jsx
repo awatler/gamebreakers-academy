@@ -26,30 +26,60 @@ export default function PilotSignupModal({ isOpen, onClose }) {
   const [age, setAge] = useState('')
   const [zip, setZip] = useState('')
   const [submitted, setSubmitted] = useState(false)
+  const [isSubmitting, setIsSubmitting] = useState(false)
   const [contactError, setContactError] = useState('')
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
 
     const trimmedEmail = email.trim()
     const trimmedPhone = phone.trim()
 
-    if (!trimmedEmail && !trimmedPhone) {
-      setContactError('Please enter an email or phone number so we can reach you.')
+    if (!trimmedEmail) {
+      setContactError('Please enter an email address so we can confirm your spot.')
       return
     }
 
-    if (trimmedEmail && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmedEmail)) {
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmedEmail)) {
       setContactError('Please enter a valid email address.')
       return
     }
 
     setContactError('')
-    setSubmitted(true)
+    setIsSubmitting(true)
+
+    try {
+      const res = await fetch('/api/subscribe', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: name.trim(),
+          email: trimmedEmail,
+          phone: trimmedPhone,
+          role,
+          age: role === 'Player' ? age.trim() : '',
+          zip: zip.trim(),
+        }),
+      })
+
+      const data = await res.json().catch(() => ({}))
+
+      if (!res.ok) {
+        setContactError(data.error || 'Something went wrong. Please try again.')
+        return
+      }
+
+      setSubmitted(true)
+    } catch {
+      setContactError('Something went wrong. Please try again.')
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   const handleClose = () => {
     setSubmitted(false)
+    setIsSubmitting(false)
     setAge('')
     setContactError('')
     onClose()
@@ -135,7 +165,7 @@ export default function PilotSignupModal({ isOpen, onClose }) {
 
                 <div className="sm:col-span-1">
                   <label htmlFor="clinic-email" className="block text-sm font-semibold text-ink">
-                    Email <span className="font-normal text-muted">(optional)</span>
+                    Email
                   </label>
                   <input
                     id="clinic-email"
@@ -145,6 +175,7 @@ export default function PilotSignupModal({ isOpen, onClose }) {
                       setEmail(e.target.value)
                       setContactError('')
                     }}
+                    required
                     className={inputClass}
                     placeholder="you@example.com"
                   />
@@ -182,8 +213,6 @@ export default function PilotSignupModal({ isOpen, onClose }) {
                   />
                 </div>
               </div>
-
-              <p className="text-xs text-muted">At least one of email or phone is required.</p>
 
               {contactError && (
                 <p className="text-sm font-medium text-red-600" role="alert">
@@ -241,9 +270,10 @@ export default function PilotSignupModal({ isOpen, onClose }) {
 
               <button
                 type="submit"
-                className="mt-4 w-full rounded-full bg-amber px-4 py-3 font-util text-sm font-bold tracking-[0.06em] text-ink transition-colors hover:bg-amber/90"
+                disabled={isSubmitting}
+                className="mt-4 w-full rounded-full bg-amber px-4 py-3 font-util text-sm font-bold tracking-[0.06em] text-ink transition-colors hover:bg-amber/90 disabled:cursor-not-allowed disabled:opacity-60"
               >
-                Let&apos;s do it!
+                {isSubmitting ? 'Signing up…' : "Let's do it!"}
               </button>
             </form>
           </>
