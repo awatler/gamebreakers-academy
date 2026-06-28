@@ -57,7 +57,7 @@ export default function PilotSignupModal({ isOpen, onClose }) {
           email: trimmedEmail,
           phone: trimmedPhone,
           role,
-          age: role === 'Player' ? age.trim() : '',
+          age: role === 'Player' || role === 'Parent' ? age.trim() : '',
           zip: zip.trim(),
         }),
       })
@@ -87,7 +87,7 @@ export default function PilotSignupModal({ isOpen, onClose }) {
 
   const handleRoleChange = (option) => {
     setRole(option)
-    if (option !== 'Player') setAge('')
+    if (option !== 'Player' && option !== 'Parent') setAge('')
   }
 
   if (!isOpen) return null
@@ -116,13 +116,13 @@ export default function PilotSignupModal({ isOpen, onClose }) {
 
         {!submitted ? (
           <>
-            <div className="flex items-center gap-2 overflow-x-auto pr-10 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-              <span className="shrink-0 text-xl" aria-hidden>
+            <div className="flex items-start gap-2 pr-10">
+              <span className="shrink-0 pt-0.5 text-xl" aria-hidden>
                 🏈
               </span>
               <h2
                 id="clinic-signup-title"
-                className="heading-display shrink-0 whitespace-nowrap text-xs leading-tight sm:text-sm md:text-base lg:text-lg"
+                className="heading-display min-w-0 flex-1 text-sm leading-snug sm:text-base md:text-lg lg:whitespace-nowrap"
               >
                 Join the Brooklyn Gamebreakers Flag Football Clinic
               </h2>
@@ -220,6 +220,26 @@ export default function PilotSignupModal({ isOpen, onClose }) {
                 </p>
               )}
 
+              {(role === 'Player' || role === 'Parent') && (
+                <div>
+                  <label htmlFor="clinic-age" className="block text-sm font-semibold text-ink">
+                    {role === 'Parent' ? 'Child Age' : 'Age'}{' '}
+                    <span aria-hidden>🎂</span>
+                  </label>
+                  <input
+                    id="clinic-age"
+                    type="number"
+                    min={1}
+                    max={99}
+                    value={age}
+                    onChange={(e) => setAge(e.target.value)}
+                    required
+                    className={`${inputClass} max-w-[8rem]`}
+                    placeholder="12"
+                  />
+                </div>
+              )}
+
               <fieldset className="mt-2">
                 <legend className="text-sm font-semibold text-ink">
                   I am a... <span aria-hidden>👋</span>
@@ -249,31 +269,12 @@ export default function PilotSignupModal({ isOpen, onClose }) {
                 </div>
               </fieldset>
 
-              {role === 'Player' && (
-                <div>
-                  <label htmlFor="clinic-age" className="block text-sm font-semibold text-ink">
-                    Age <span aria-hidden>🎂</span>
-                  </label>
-                  <input
-                    id="clinic-age"
-                    type="number"
-                    min={1}
-                    max={99}
-                    value={age}
-                    onChange={(e) => setAge(e.target.value)}
-                    required
-                    className={`${inputClass} max-w-[8rem]`}
-                    placeholder="12"
-                  />
-                </div>
-              )}
-
               <button
                 type="submit"
                 disabled={isSubmitting}
                 className="mt-4 w-full rounded-full bg-amber px-4 py-3 font-util text-sm font-bold tracking-[0.06em] text-ink transition-colors hover:bg-amber/90 disabled:cursor-not-allowed disabled:opacity-60"
               >
-                {isSubmitting ? 'Signing up…' : "Let's do it!"}
+                {isSubmitting ? 'Signing up…' : "Let's Go!"}
               </button>
             </form>
           </>

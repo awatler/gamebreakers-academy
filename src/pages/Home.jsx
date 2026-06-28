@@ -28,13 +28,7 @@ export default function Home() {
 
         <div className="relative z-10 flex min-h-[600px] min-h-screen flex-col items-center justify-center px-6 py-16 text-center sm:px-8">
 
-          <p className="font-display text-xl font-bold uppercase tracking-wide text-forest sm:text-2xl md:text-3xl">
-
-            We Break Through
-
-          </p>
-
-          <h1 className="mt-4 font-display text-4xl font-bold uppercase leading-[0.95] tracking-wide text-white sm:text-5xl md:text-6xl lg:text-7xl">
+          <h1 className="font-display text-4xl font-bold uppercase leading-[0.95] tracking-wide text-white sm:text-5xl md:text-6xl lg:text-7xl">
 
             Brooklyn Gamebreakers
 
@@ -68,6 +62,12 @@ export default function Home() {
             Sign Up
 
           </button>
+
+          <p className="mt-10 font-display text-4xl font-bold uppercase tracking-wide text-forest sm:text-5xl md:text-6xl">
+
+            We Break Through
+
+          </p>
 
         </div>
 
