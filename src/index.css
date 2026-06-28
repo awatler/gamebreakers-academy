@@ -60,6 +60,32 @@ body {
     display: inline-block;
     flex-shrink: 0;
   }
+  .kicker-centered::after {
+    content: '';
+    width: 26px;
+    height: 2px;
+    background: rgb(var(--color-amber));
+    display: inline-block;
+    flex-shrink: 0;
+  }
+
+  /* Large centered kicker — 3× size with amber rules on both sides */
+  .kicker-lg {
+    @apply font-util text-2xl font-bold uppercase tracking-[0.22em] text-green-deep sm:text-3xl;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+  }
+  .kicker-lg::before,
+  .kicker-lg::after {
+    content: '';
+    width: 36px;
+    height: 2px;
+    background: rgb(var(--color-amber));
+    display: inline-block;
+    flex-shrink: 0;
+  }
 
   /* Display headings — Oswald uppercase */
   .heading-display {

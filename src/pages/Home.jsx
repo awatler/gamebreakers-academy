@@ -1,4 +1,4 @@
-import { Trophy, Users, ShieldCheck } from 'lucide-react'
+import { Trophy, Users, HeartHandshake } from 'lucide-react'
 
 import { useSignupModal } from '../context/SignupModalContext'
 
@@ -79,17 +79,11 @@ export default function Home() {
 
         <div className="mx-auto max-w-5xl px-2 text-center">
 
-          <p className="kicker justify-center">The standard</p>
+          <p className="kicker-lg">The mission</p>
 
-          <h2 className="heading-display mt-3 text-2xl sm:text-3xl md:text-4xl">
+          <p className="mx-auto mt-3 max-w-2xl text-base leading-relaxed text-muted sm:text-lg">
 
-            The Gamebreakers Standard
-
-          </h2>
-
-          <p className="mx-auto mt-3 max-w-2xl text-sm text-muted sm:text-base">
-
-            Our leagues blend professional-grade structure with a deeply local, community-first ethos.
+            Brooklyn Gamebreakers makes competitive youth sports free and accessible — using the game to build confidence, character, and community on the field and beyond.
 
           </p>
 
@@ -97,33 +91,9 @@ export default function Home() {
 
         <div className="mx-auto mt-12 grid max-w-5xl gap-8 px-2 sm:grid-cols-3">
 
-          <article className="rounded-ui border border-border bg-white p-6 text-left">
+          <article className="rounded-ui border border-border bg-white p-6 text-center">
 
-            <div className="flex h-14 w-14 items-center justify-center rounded-full bg-forest text-white">
-
-              <Trophy size={28} />
-
-            </div>
-
-            <h3 className="heading-display mt-4 text-lg">
-
-              Elite Standards
-
-            </h3>
-
-            <p className="mt-2 text-sm leading-relaxed text-muted">
-
-              We bring professional-grade coaching and organization to the local community level.
-
-            </p>
-
-          </article>
-
-
-
-          <article className="rounded-ui border border-border bg-white p-6 text-left">
-
-            <div className="flex h-14 w-14 items-center justify-center rounded-full bg-forest text-white">
+            <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-forest text-white">
 
               <Users size={28} />
 
@@ -131,13 +101,13 @@ export default function Home() {
 
             <h3 className="heading-display mt-4 text-lg">
 
-              Community First
+              Everybody Eats
 
             </h3>
 
             <p className="mt-2 text-sm leading-relaxed text-muted">
 
-              Building more than just athletes; we’re fostering a network of leaders in Brooklyn.
+              Opportunity is shared — nobody gets overlooked.
 
             </p>
 
@@ -145,23 +115,47 @@ export default function Home() {
 
 
 
-          <article className="rounded-ui border border-border bg-white p-6 text-left">
+          <article className="rounded-ui border border-border bg-white p-6 text-center">
 
-            <div className="flex h-14 w-14 items-center justify-center rounded-full bg-forest text-white">
+            <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-forest text-white">
 
-              <ShieldCheck size={28} />
+              <HeartHandshake size={28} />
 
             </div>
 
             <h3 className="heading-display mt-4 text-lg">
 
-              Character &amp; Discipline
+              Find Your People
 
             </h3>
 
             <p className="mt-2 text-sm leading-relaxed text-muted">
 
-              Our programs emphasize integrity and grit, both on and off the court.
+              Teammates become friends and even family.
+
+            </p>
+
+          </article>
+
+
+
+          <article className="rounded-ui border border-border bg-white p-6 text-center">
+
+            <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-forest text-white">
+
+              <Trophy size={28} />
+
+            </div>
+
+            <h3 className="heading-display mt-4 text-lg">
+
+              We Break Through
+
+            </h3>
+
+            <p className="mt-2 text-sm leading-relaxed text-muted">
+
+              We push past limits, together.
 
             </p>
 
