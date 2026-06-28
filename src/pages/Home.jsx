@@ -55,7 +55,7 @@ export default function Home() {
 
             onClick={openSignupModal}
 
-            className="mt-10 rounded-full bg-amber px-8 py-4 font-util text-base font-bold tracking-[0.06em] text-ink transition-all duration-200 ease-in-out hover:bg-amber/90"
+            className="mt-10 inline-flex h-[3.75rem] min-w-[10.5rem] items-center justify-center rounded-full bg-amber px-10 font-util text-[1.625rem] font-bold leading-none tracking-[0.08em] text-ink shadow-lg shadow-black/25 transition-all duration-200 ease-in-out hover:scale-[1.03] hover:bg-amber/90 hover:shadow-xl sm:min-w-[11.5rem] sm:px-12 sm:text-[1.8rem]"
 
           >
 
