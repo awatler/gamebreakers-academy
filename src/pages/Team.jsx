@@ -60,6 +60,7 @@ const coreValues = [
 
 const team = [
   'Alex',
+  'Jason',
   'Jarrett',
   'Keith',
   'Wanemi',
