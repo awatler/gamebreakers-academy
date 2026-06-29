@@ -91,16 +91,25 @@ export async function POST(request) {
       )
     }
 
-    await fetch(`${memberUrl}/tags`, {
-      method: 'POST',
-      headers: {
-        Authorization: authHeader,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        tags: [{ name: CLINIC_TAG, status: 'active' }],
-      }),
-    })
+    try {
+      const tagRes = await fetch(`${memberUrl}/tags`, {
+        method: 'POST',
+        headers: {
+          Authorization: authHeader,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          tags: [{ name: CLINIC_TAG, status: 'active' }],
+        }),
+      })
+
+      if (!tagRes.ok) {
+        const tagBody = await tagRes.json().catch(() => ({}))
+        console.error('Mailchimp tag error:', tagRes.status, tagBody)
+      }
+    } catch (tagErr) {
+      console.error('Mailchimp tag request failed:', tagErr)
+    }
 
     return Response.json({ success: true })
   } catch (err) {

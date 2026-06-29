@@ -62,10 +62,23 @@ export default function PilotSignupModal({ isOpen, onClose }) {
         }),
       })
 
-      const data = await res.json().catch(() => ({}))
+      let data = {}
+      const contentType = res.headers.get('content-type') || ''
+
+      if (contentType.includes('application/json')) {
+        data = await res.json()
+      } else {
+        const text = await res.text()
+        console.error('Non-JSON subscribe response:', res.status, text.slice(0, 200))
+      }
 
       if (!res.ok) {
-        setContactError(data.error || 'Something went wrong. Please try again.')
+        setContactError(
+          data.error ||
+            (res.status === 404
+              ? 'Signup is unavailable in local preview. Restart the dev server or test on brooklyngamebreakers.com.'
+              : 'Something went wrong. Please try again.'),
+        )
         return
       }
 
@@ -291,10 +304,10 @@ export default function PilotSignupModal({ isOpen, onClose }) {
             <p className="mt-3 text-sm leading-relaxed text-muted">
               Please contact{' '}
               <a
-                href="mailto:alex@brooklyngamebreakers.com"
+                href="mailto:info@brooklyngamebreakers.com"
                 className="font-semibold text-forest hover:text-green-deep"
               >
-                alex@brooklyngamebreakers.com
+                info@brooklyngamebreakers.com
               </a>{' '}
               with any questions.
             </p>
