@@ -309,7 +309,16 @@ export default function PilotSignupModal({ isOpen, onClose }) {
               >
                 info@brooklyngamebreakers.com
               </a>{' '}
-              with any questions.
+              with any questions and make sure to follow{' '}
+              <a
+                href="https://www.instagram.com/brooklyngamebreakers"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="font-semibold text-forest hover:text-green-deep"
+              >
+                @brooklyngamebreakers
+              </a>{' '}
+              on social media for more information.
             </p>
             <button
               type="button"
