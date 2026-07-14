@@ -27,7 +27,7 @@ When someone clicks **"Let's do it!"** on the site:
 | Age | Yes, when Role = Player (ages 7–14) |
 | Zip Code | Optional |
 
-**Parent multi-child signups:** each child becomes a **separate Mailchimp contact** so clinic headcount is accurate. Sibling records are linked via `PEMAIL`, `CHINDEX`, `CHCOUNT`, and `SIGNUPID` merge fields.
+**Parent multi-child signups:** creates **one parent contact** at the parent's real email (`ROLE = Parent`) for campaigns, plus **one headcount-only child contact per kid** on `clinic-*` alias emails (`ROLE = Player`). Sibling child records are linked via `PEMAIL`, `CHINDEX`, `CHCOUNT`, and `SIGNUPID`.
 
 These map to Mailchimp **merge fields** (custom contact properties).
 
@@ -96,17 +96,21 @@ Mailchimp always has **Email Address**. Everything else is stored in **merge fie
 
 When adding a field: **Add A Field** → set the label (e.g. "Parent Email") → **edit the merge tag box** and type `PEMAIL` exactly.
 
-### Multi-child email strategy
+### Multi-child data model
 
-Mailchimp requires a **unique email per contact**. For every child in a parent signup, the API creates a dedicated alias on your domain:
+Each parent signup creates two types of Mailchimp records:
 
-| Child | Email used in Mailchimp |
-|---|---|
-| 1 | `clinic-{hash}-1@brooklyngamebreakers.com` |
-| 2 | `clinic-{hash}-2@brooklyngamebreakers.com` |
-| 3 | `clinic-{hash}-3@brooklyngamebreakers.com` |
+| Record | Email | ROLE | Used for |
+|---|---|---|---|
+| Parent | Parent's real email | `Parent` | Email campaigns, contact info |
+| Each child | `clinic-{hash}-1@brooklyngamebreakers.com`, etc. | `Player` | Headcount only — do not email |
 
-The hash is derived from the parent's real email so siblings in one signup share the same prefix. The parent's real email is always stored in **PEMAIL** for contact and reporting.
+The parent's real email is also stored in **PEMAIL** on each child record so siblings can be grouped.
+
+### Email campaigns vs. headcount
+
+- **Send campaigns to:** contacts where `ROLE = Parent` (real email addresses), or exclude emails containing `clinic-`
+- **Clinic headcount:** count contacts where `ROLE = Player` + clinic tag (the `clinic-*` alias rows)
 
 ---
 
@@ -264,7 +268,7 @@ Filter your audience (or export CSV) where:
 - `ROLE` = `Player`
 - `AGE` is between 7 and 14
 
-The row count = registered participants. Use `PEMAIL` and `SIGNUPID` to group siblings from the same form submission.
+The row count = registered participants (child `Player` rows only). Use `PEMAIL` and `SIGNUPID` on child rows to group siblings. Parents are stored separately at their real email with `ROLE = Parent`.
 
 3. On success → show **"You're in!"** (and child count for parents)
 4. On error → show a friendly retry message

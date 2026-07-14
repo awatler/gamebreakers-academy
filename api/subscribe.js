@@ -156,6 +156,41 @@ export async function POST(request) {
       const childCount = childAges.length
       const failures = []
 
+      const parentHash = getSubscriberHash(trimmedEmail)
+      const parentUrl = `${baseUrl}/lists/${audienceId}/members/${parentHash}`
+
+      const parentMergeFields = {
+        FNAME,
+        LNAME,
+        PHONE: trimmedPhone,
+        ROLE: 'Parent',
+        [MERGE.CHILD_COUNT]: childCount,
+        [MERGE.SIGNUP_ID]: signupId,
+      }
+
+      if (trimmedZip) parentMergeFields.ZIP = trimmedZip
+
+      const parentResult = await upsertMember({
+        memberUrl: parentUrl,
+        authHeader,
+        payload: {
+          email_address: trimmedEmail,
+          status_if_new: 'subscribed',
+          status: 'subscribed',
+          merge_fields: parentMergeFields,
+        },
+      })
+
+      if (!parentResult.ok) {
+        console.error('Mailchimp parent error:', parentResult.status, parentResult.errBody)
+        return Response.json(
+          { error: parentResult.detail || 'Could not complete signup. Please try again.' },
+          { status: parentResult.status >= 500 ? 502 : 400 },
+        )
+      }
+
+      await applyClinicTag(parentUrl, authHeader)
+
       for (let index = 0; index < childAges.length; index += 1) {
         const childIndex = index + 1
         const childEmail = buildChildEmail(trimmedEmail, childIndex)
