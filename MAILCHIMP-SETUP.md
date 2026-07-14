@@ -27,7 +27,7 @@ When someone clicks **"Let's do it!"** on the site:
 | Age | Yes, when Role = Player (ages 7–14) |
 | Zip Code | Optional |
 
-**Parent multi-child signups:** each child becomes a **separate Mailchimp contact** so clinic headcount is accurate. Sibling records are linked via `PARENT_EMAIL`, `CHILD_INDEX`, `CHILD_COUNT`, and `SIGNUP_ID` merge fields.
+**Parent multi-child signups:** each child becomes a **separate Mailchimp contact** so clinic headcount is accurate. Sibling records are linked via `PEMAIL`, `CHINDEX`, `CHCOUNT`, and `SIGNUPID` merge fields.
 
 These map to Mailchimp **merge fields** (custom contact properties).
 
@@ -70,24 +70,31 @@ Mailchimp always has **Email Address**. Everything else is stored in **merge fie
 
 1. Go to **Audience** → **Audiences** → click your audience.
 2. Click **Settings** → **Audience fields and *|MERGE|* tags**.
-3. Confirm or add these fields:
+3. Confirm or add these fields. **For each field, manually type the merge tag below — do not use Mailchimp's auto-generated tag.**
 
-| Form field | Mailchimp merge tag | Type |
+| Field label (display name) | Merge tag to type manually | Chars | Type |
+|---|---|---|---|
+| Name | **FNAME** + **LNAME** (built-in) | — | Text |
+| Phone | **PHONE** (built-in) | — | Phone |
+| Role | **ROLE** | 4 | Text |
+| Age | **AGE** | 3 | Number or Text |
+| Zip Code | **ZIP** | 3 | Text |
+| Parent Email | **PEMAIL** | 6 | Text |
+| Parent Name | **PNAME** | 5 | Text |
+| Child Index | **CHINDEX** | 7 | Number |
+| Child Count | **CHCOUNT** | 7 | Number |
+| Signup ID | **SIGNUPID** | 8 | Text |
+
+**Do not use these — they are too long or wrong:**
+
+| Bad tag | Chars | Why it fails |
 |---|---|---|
-| Name | **FNAME** + **LNAME** (split on first space) | Text |
-| Phone | **PHONE** | Phone |
-| Role | **ROLE** (custom) | Text |
-| Age | **AGE** (custom) | Number or Text |
-| Zip Code | **ZIP** or **ZIPCODE** | Text |
-| Parent email (on child records) | **PARENT_EMAIL** (custom) | Text |
-| Parent name (on child records) | **PARENT_NAME** (custom) | Text |
-| Child index in signup | **CHILD_INDEX** (custom) | Number |
-| Total children in signup | **CHILD_COUNT** (custom) | Number |
-| Signup batch ID | **SIGNUP_ID** (custom) | Text |
+| `PARENT_EMAIL` | 12 | Over 10-char limit |
+| `PARENT_EMAI` | 11 | Mailchimp auto-suggests this — still over limit |
+| `CHILD_INDEX` | 11 | Over limit |
+| `CHILD_COUNT` | 11 | Over limit |
 
-To add a custom field: **Add A Field** → choose type → label `Role` → tag becomes `ROLE`.
-
-**Write down your merge tags** — code must use them exactly (all caps).
+When adding a field: **Add A Field** → set the label (e.g. "Parent Email") → **edit the merge tag box** and type `PEMAIL` exactly.
 
 ### Multi-child email strategy
 
@@ -100,7 +107,9 @@ Mailchimp requires a **unique email per contact**. For parents signing up multip
 | 2nd+ child (Yahoo, AOL) | Hyphen variant, e.g. `parent-bgaclinic2@yahoo.com` |
 | 2nd+ child (other domains) | Fallback alias on your domain, e.g. `clinic-{hash}-2@brooklyngamebreakers.com` |
 
-The real parent email is always stored in **PARENT_EMAIL** on every child record.
+The real parent email is always stored in **PEMAIL** on every child record.
+
+For custom domains without subaddressing (e.g. `@brooklyngamebreakers.com`), **all children** including the first use fallback alias emails like `clinic-{hash}-1@brooklyngamebreakers.com`.
 
 ---
 
@@ -258,7 +267,7 @@ Filter your audience (or export CSV) where:
 - `ROLE` = `Player`
 - `AGE` is between 7 and 14
 
-The row count = registered participants. Use `PARENT_EMAIL` and `SIGNUP_ID` to group siblings from the same form submission.
+The row count = registered participants. Use `PEMAIL` and `SIGNUPID` to group siblings from the same form submission.
 
 3. On success → show **"You're in!"** (and child count for parents)
 4. On error → show a friendly retry message

@@ -2,6 +2,16 @@ import crypto from 'crypto'
 
 const CLINIC_TAG = 'Flag Football Clinic - July 2026'
 const MAX_CHILDREN = 5
+const FALLBACK_DOMAIN = 'brooklyngamebreakers.com'
+
+// Mailchimp merge tags must be <= 10 characters.
+const MERGE = {
+  PARENT_EMAIL: 'PEMAIL',
+  PARENT_NAME: 'PNAME',
+  CHILD_INDEX: 'CHINDEX',
+  CHILD_COUNT: 'CHCOUNT',
+  SIGNUP_ID: 'SIGNUPID',
+}
 
 const PLUS_ADDRESS_DOMAINS = new Set([
   'gmail.com',
@@ -38,27 +48,31 @@ function getSubscriberHash(email) {
   return crypto.createHash('md5').update(email.toLowerCase()).digest('hex')
 }
 
+function supportsSubaddressing(domain) {
+  return PLUS_ADDRESS_DOMAINS.has(domain) || HYPHEN_ADDRESS_DOMAINS.has(domain)
+}
+
 function buildChildEmail(parentEmail, childIndex) {
   const normalized = parentEmail.trim().toLowerCase()
   const atIndex = normalized.lastIndexOf('@')
   if (atIndex === -1) return normalized
 
-  if (childIndex === 1) return normalized
-
   const local = normalized.slice(0, atIndex)
   const domain = normalized.slice(atIndex + 1)
   const suffix = `bgaclinic${childIndex}`
 
-  if (PLUS_ADDRESS_DOMAINS.has(domain)) {
-    return `${local}+${suffix}@${domain}`
-  }
+  if (supportsSubaddressing(domain)) {
+    if (childIndex === 1) return normalized
 
-  if (HYPHEN_ADDRESS_DOMAINS.has(domain)) {
+    if (PLUS_ADDRESS_DOMAINS.has(domain)) {
+      return `${local}+${suffix}@${domain}`
+    }
+
     return `${local}-${suffix}@${domain}`
   }
 
   const shortHash = getSubscriberHash(normalized).slice(0, 8)
-  return `clinic-${shortHash}-${childIndex}@brooklyngamebreakers.com`
+  return `clinic-${shortHash}-${childIndex}@${FALLBACK_DOMAIN}`
 }
 
 function parseChildAges(children, age) {
@@ -191,11 +205,11 @@ export async function POST(request) {
           PHONE: trimmedPhone,
           ROLE: 'Player',
           AGE: String(childAges[index]),
-          PARENT_EMAIL: trimmedEmail,
-          PARENT_NAME: trimmedName,
-          CHILD_INDEX: String(childIndex),
-          CHILD_COUNT: String(childCount),
-          SIGNUP_ID: signupId,
+          [MERGE.PARENT_EMAIL]: trimmedEmail,
+          [MERGE.PARENT_NAME]: trimmedName,
+          [MERGE.CHILD_INDEX]: String(childIndex),
+          [MERGE.CHILD_COUNT]: String(childCount),
+          [MERGE.SIGNUP_ID]: signupId,
         }
 
         if (trimmedZip) mergeFields.ZIP = trimmedZip
