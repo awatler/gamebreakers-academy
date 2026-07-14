@@ -13,22 +13,6 @@ const MERGE = {
   SIGNUP_ID: 'SIGNUPID',
 }
 
-const PLUS_ADDRESS_DOMAINS = new Set([
-  'gmail.com',
-  'googlemail.com',
-  'outlook.com',
-  'hotmail.com',
-  'live.com',
-  'msn.com',
-  'icloud.com',
-  'me.com',
-  'mac.com',
-  'proton.me',
-  'protonmail.com',
-])
-
-const HYPHEN_ADDRESS_DOMAINS = new Set(['yahoo.com', 'ymail.com', 'rocketmail.com', 'aol.com'])
-
 function getEnv(name) {
   return process.env[name]
 }
@@ -48,29 +32,8 @@ function getSubscriberHash(email) {
   return crypto.createHash('md5').update(email.toLowerCase()).digest('hex')
 }
 
-function supportsSubaddressing(domain) {
-  return PLUS_ADDRESS_DOMAINS.has(domain) || HYPHEN_ADDRESS_DOMAINS.has(domain)
-}
-
 function buildChildEmail(parentEmail, childIndex) {
   const normalized = parentEmail.trim().toLowerCase()
-  const atIndex = normalized.lastIndexOf('@')
-  if (atIndex === -1) return normalized
-
-  const local = normalized.slice(0, atIndex)
-  const domain = normalized.slice(atIndex + 1)
-  const suffix = `bgaclinic${childIndex}`
-
-  if (supportsSubaddressing(domain)) {
-    if (childIndex === 1) return normalized
-
-    if (PLUS_ADDRESS_DOMAINS.has(domain)) {
-      return `${local}+${suffix}@${domain}`
-    }
-
-    return `${local}-${suffix}@${domain}`
-  }
-
   const shortHash = getSubscriberHash(normalized).slice(0, 8)
   return `clinic-${shortHash}-${childIndex}@${FALLBACK_DOMAIN}`
 }
@@ -207,8 +170,8 @@ export async function POST(request) {
           AGE: String(childAges[index]),
           [MERGE.PARENT_EMAIL]: trimmedEmail,
           [MERGE.PARENT_NAME]: trimmedName,
-          [MERGE.CHILD_INDEX]: String(childIndex),
-          [MERGE.CHILD_COUNT]: String(childCount),
+          [MERGE.CHILD_INDEX]: childIndex,
+          [MERGE.CHILD_COUNT]: childCount,
           [MERGE.SIGNUP_ID]: signupId,
         }
 
@@ -244,11 +207,13 @@ export async function POST(request) {
       }
 
       if (failures.length > 0) {
+        console.error('Partial signup failures:', failures)
         return Response.json(
           {
             error: `${registeredCount} of ${childCount} children registered. Please contact info@brooklyngamebreakers.com to finish signing up.`,
             registeredCount,
             childCount,
+            failures,
           },
           { status: 502 },
         )

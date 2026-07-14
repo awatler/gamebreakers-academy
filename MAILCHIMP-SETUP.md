@@ -98,18 +98,15 @@ When adding a field: **Add A Field** → set the label (e.g. "Parent Email") →
 
 ### Multi-child email strategy
 
-Mailchimp requires a **unique email per contact**. For parents signing up multiple children:
+Mailchimp requires a **unique email per contact**. For every child in a parent signup, the API creates a dedicated alias on your domain:
 
 | Child | Email used in Mailchimp |
 |---|---|
-| 1st child | Parent's real email |
-| 2nd+ child (Gmail, Outlook, iCloud, etc.) | Subaddressed email, e.g. `parent+bgaclinic2@gmail.com` |
-| 2nd+ child (Yahoo, AOL) | Hyphen variant, e.g. `parent-bgaclinic2@yahoo.com` |
-| 2nd+ child (other domains) | Fallback alias on your domain, e.g. `clinic-{hash}-2@brooklyngamebreakers.com` |
+| 1 | `clinic-{hash}-1@brooklyngamebreakers.com` |
+| 2 | `clinic-{hash}-2@brooklyngamebreakers.com` |
+| 3 | `clinic-{hash}-3@brooklyngamebreakers.com` |
 
-The real parent email is always stored in **PEMAIL** on every child record.
-
-For custom domains without subaddressing (e.g. `@brooklyngamebreakers.com`), **all children** including the first use fallback alias emails like `clinic-{hash}-1@brooklyngamebreakers.com`.
+The hash is derived from the parent's real email so siblings in one signup share the same prefix. The parent's real email is always stored in **PEMAIL** for contact and reporting.
 
 ---
 
