@@ -21,10 +21,13 @@ When someone clicks **"Let's do it!"** on the site:
 |---|---|
 | Name | Yes |
 | Email | Yes |
-| Phone | Yes |
+| Phone | No |
 | Role (Parent / Player / Coach / Community Partner) | Yes |
-| Age | Yes, only when Role = Player |
+| Child ages | Yes, when Role = Parent (1–5 children, ages 7–14) |
+| Age | Yes, when Role = Player (ages 7–14) |
 | Zip Code | Optional |
+
+**Parent multi-child signups:** each child becomes a **separate Mailchimp contact** so clinic headcount is accurate. Sibling records are linked via `PARENT_EMAIL`, `CHILD_INDEX`, `CHILD_COUNT`, and `SIGNUP_ID` merge fields.
 
 These map to Mailchimp **merge fields** (custom contact properties).
 
@@ -76,10 +79,28 @@ Mailchimp always has **Email Address**. Everything else is stored in **merge fie
 | Role | **ROLE** (custom) | Text |
 | Age | **AGE** (custom) | Number or Text |
 | Zip Code | **ZIP** or **ZIPCODE** | Text |
+| Parent email (on child records) | **PARENT_EMAIL** (custom) | Text |
+| Parent name (on child records) | **PARENT_NAME** (custom) | Text |
+| Child index in signup | **CHILD_INDEX** (custom) | Number |
+| Total children in signup | **CHILD_COUNT** (custom) | Number |
+| Signup batch ID | **SIGNUP_ID** (custom) | Text |
 
 To add a custom field: **Add A Field** → choose type → label `Role` → tag becomes `ROLE`.
 
 **Write down your merge tags** — code must use them exactly (all caps).
+
+### Multi-child email strategy
+
+Mailchimp requires a **unique email per contact**. For parents signing up multiple children:
+
+| Child | Email used in Mailchimp |
+|---|---|
+| 1st child | Parent's real email |
+| 2nd+ child (Gmail, Outlook, iCloud, etc.) | Subaddressed email, e.g. `parent+bgaclinic2@gmail.com` |
+| 2nd+ child (Yahoo, AOL) | Hyphen variant, e.g. `parent-bgaclinic2@yahoo.com` |
+| 2nd+ child (other domains) | Fallback alias on your domain, e.g. `clinic-{hash}-2@brooklyngamebreakers.com` |
+
+The real parent email is always stored in **PARENT_EMAIL** on every child record.
 
 ---
 
@@ -201,6 +222,8 @@ Update `PilotSignupModal.jsx` so `handleSubmit`:
 1. Validates the form (browser `required` fields)
 2. `POST` to `/api/subscribe` with JSON:
 
+**Player self-signup:**
+
 ```json
 {
   "name": "Alex Watler",
@@ -212,7 +235,32 @@ Update `PilotSignupModal.jsx` so `handleSubmit`:
 }
 ```
 
-3. On success → show **"You're in!"**
+**Parent with multiple children:**
+
+```json
+{
+  "name": "Jane Doe",
+  "email": "jane@gmail.com",
+  "phone": "555-123-4567",
+  "role": "Parent",
+  "zip": "11215",
+  "children": [{ "age": "9" }, { "age": "11" }, { "age": "13" }]
+}
+```
+
+The API creates **one Mailchimp row per child**, each tagged for the clinic.
+
+### Clinic headcount
+
+Filter your audience (or export CSV) where:
+
+- Tag = `Flag Football Clinic - July 2026`
+- `ROLE` = `Player`
+- `AGE` is between 7 and 14
+
+The row count = registered participants. Use `PARENT_EMAIL` and `SIGNUP_ID` to group siblings from the same form submission.
+
+3. On success → show **"You're in!"** (and child count for parents)
 4. On error → show a friendly retry message
 5. Optionally disable the button and show a spinner while submitting
 
@@ -238,10 +286,12 @@ Update `PilotSignupModal.jsx` so `handleSubmit`:
 - [ ] Contact appears in Mailchimp
 
 ### Edge cases
-- [ ] Submit as **Player** with Age
-- [ ] Submit as **Parent** (no Age)
+- [ ] Submit as **Player** with Age (7–14)
+- [ ] Submit as **Parent** with 1 child
+- [ ] Submit as **Parent** with 3 children (Gmail subaddressing)
 - [ ] Submit **without Zip**
-- [ ] Submit same email twice (should update, not crash)
+- [ ] Submit same parent email twice to add/update children (should upsert, not crash)
+- [ ] Reject age 6 or 15
 
 ### Double opt-in
 - **ON:** contact shows **Pending** until confirmation email clicked
