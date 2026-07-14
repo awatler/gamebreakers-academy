@@ -10,6 +10,7 @@ const MERGE = {
   PARENT_NAME: 'PNAME',
   CHILD_INDEX: 'CHINDEX',
   CHILD_COUNT: 'CHCOUNT',
+  CHILD_AGES: 'CHLDAGES',
   SIGNUP_ID: 'SIGNUPID',
 }
 
@@ -165,6 +166,7 @@ export async function POST(request) {
         PHONE: trimmedPhone,
         ROLE: 'Parent',
         [MERGE.CHILD_COUNT]: childCount,
+        [MERGE.CHILD_AGES]: childAges.join(', '),
         [MERGE.SIGNUP_ID]: signupId,
       }
 

@@ -83,6 +83,7 @@ Mailchimp always has **Email Address**. Everything else is stored in **merge fie
 | Parent Name | **PNAME** | 5 | Text |
 | Child Index | **CHINDEX** | 7 | Number |
 | Child Count | **CHCOUNT** | 7 | Number |
+| Child Ages | **CHLDAGES** | 8 | Text |
 | Signup ID | **SIGNUPID** | 8 | Text |
 
 **Do not use these — they are too long or wrong:**
@@ -102,7 +103,7 @@ Each parent signup creates two types of Mailchimp records:
 
 | Record | Email | ROLE | Used for |
 |---|---|---|---|
-| Parent | Parent's real email | `Parent` | Email campaigns, contact info |
+| Parent | Parent's real email | `Parent` | Email campaigns, contact info, **CHLDAGES** (e.g. `9, 11, 13`) |
 | Each child | `clinic-{hash}-1@brooklyngamebreakers.com`, etc. | `Player` | Headcount only — do not email |
 
 The parent's real email is also stored in **PEMAIL** on each child record so siblings can be grouped.
