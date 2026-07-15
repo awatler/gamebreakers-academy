@@ -1,0 +1,33 @@
+---
+description: Clinic signup form and Mailchimp integration conventions
+globs:
+  - api/subscribe.js
+  - src/components/PilotSignupModal.jsx
+  - MAILCHIMP-SETUP.md
+  - docs/agent/**
+alwaysApply: false
+---
+
+# Clinic signup & Mailchimp
+
+Read `docs/agent/MAILCHIMP-SIGNUP.md` before changing the signup form or subscribe API.
+
+## Data model (parent + child headcount)
+
+- **Parent record** at real email, `ROLE = Parent`, `CHLDAGES` = comma-separated ages
+- **Child records** at `clinic-{hash}-{N}@brooklyngamebreakers.com`, `ROLE = Player`, individual `AGE`
+- Do not put all children on clinic aliases only — parent must keep real email for campaigns
+- Do not use email subaddressing (`+bgaclinic2`) — Mailchimp rejects it
+
+## Merge tags (max 10 chars)
+
+Use `PEMAIL`, `PNAME`, `CHINDEX`, `CHCOUNT`, `CHLDAGES`, `SIGNUPID` — never `PARENT_EMAIL` or `PARENT_EMAI`.
+
+## Headcount vs campaigns
+
+- Headcount: `ROLE = Player` + clinic tag
+- Campaigns: `ROLE = Parent` or exclude emails containing `clinic-`
+
+## Local dev
+
+Vite proxies `/api` to production. Restart dev server after `vite.config.js` changes.
