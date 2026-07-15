@@ -83,7 +83,7 @@ export default function Home() {
 
           <p className="mx-auto mt-3 max-w-2xl text-base leading-relaxed text-muted sm:text-lg">
 
-            Brooklyn Gamebreakers makes competitive youth sports free and accessible — using the game to build confidence, character, and community on the field and beyond.
+            Redefining youth athletics through innovative, accessible, and high-impact programming. By blending elite sports training with creative disciplines like tech and design, Brooklyn Gamebreakers provides a platform for Brooklyn&apos;s youth to discover their potential and find their spark.
 
           </p>
 
