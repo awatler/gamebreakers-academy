@@ -24,9 +24,18 @@ export const heroImage = 'https://images.unsplash.com/photo-1628135276936-21c129
 export const assets = {
   teamFlagFootball: '/images/team-flag-football.png',
   /** Founders' hero on Meet the Team. */
-  foundersHero: '/images/Gamebreakers.jpg',
+  foundersHero: '/images/gamebreakers-group-photo.jpg',
   /** Outdoor park basketball — Brooklyn vibe, community pickup game. Good for leagues/hero. */
   brooklynBasketballPark: '/images/brooklyn-basketball-park.jpg',
   /** Youth Flag Football — female player running, flag belt, B&W (Leagues card). */
   youthFlagFootball: '/images/youth-flag-football.png',
+  headshots: {
+    alex: '/images/headshots/alex.jpg',
+    jarrett: '/images/headshots/jarrett.jpg',
+    keith: '/images/headshots/keith.jpg',
+    wanemi: '/images/headshots/wanemi.jpg',
+    will: '/images/headshots/will.jpg',
+    kianna: '/images/headshots/kianna.jpg',
+    georgia: '/images/headshots/georgia.png',
+  },
 }
