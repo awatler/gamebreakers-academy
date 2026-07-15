@@ -7,11 +7,13 @@ import BrandLogo from './BrandLogo'
 
 
 const navLinks = [
-
   { to: '/', label: 'Home' },
-
   { to: '/team', label: 'Team' },
-
+  {
+    href: 'https://venmo.com/u/BrooklynGamebreakers',
+    label: 'Donate',
+    external: true,
+  },
 ]
 
 
@@ -60,24 +62,26 @@ export default function Footer() {
 
             <ul className="flex flex-wrap gap-6 sm:gap-8">
 
-              {navLinks.map(({ to, label }) => (
-
-                <li key={to}>
-
-                  <Link
-
-                    to={to}
-
-                    className="font-util text-sm font-bold text-white/80 transition-colors hover:text-white"
-
-                  >
-
-                    {label}
-
-                  </Link>
-
+              {navLinks.map((link) => (
+                <li key={link.label}>
+                  {link.external ? (
+                    <a
+                      href={link.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="font-util text-sm font-bold text-white/80 transition-colors hover:text-white"
+                    >
+                      {link.label}
+                    </a>
+                  ) : (
+                    <Link
+                      to={link.to}
+                      className="font-util text-sm font-bold text-white/80 transition-colors hover:text-white"
+                    >
+                      {link.label}
+                    </Link>
+                  )}
                 </li>
-
               ))}
 
             </ul>
