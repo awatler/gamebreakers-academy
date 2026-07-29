@@ -228,7 +228,7 @@ Restart `npm run dev` after creating `.env.local`.
 
 ## Part 9 — Wire up the React form
 
-Update `PilotSignupModal.jsx` so `handleSubmit`:
+Update `InterestSignupModal.jsx` so `handleSubmit`:
 
 1. Validates the form (browser `required` fields)
 2. `POST` to `/api/subscribe` with JSON:
@@ -259,7 +259,7 @@ Update `PilotSignupModal.jsx` so `handleSubmit`:
 }
 ```
 
-The API creates **one Mailchimp row per child**, each tagged for the clinic.
+The API creates **one Mailchimp row per child**, each tagged `Interest List - 2026`.
 
 ### Clinic headcount
 

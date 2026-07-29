@@ -1,10 +1,10 @@
 import { useState } from 'react'
 import Navbar from './Navbar'
 import Footer from './Footer'
-import PilotSignupModal from './PilotSignupModal'
+import InterestSignupModal from './InterestSignupModal'
 import { SignupModalContext } from '../context/SignupModalContext'
 
-const SESSION_KEY = 'clinic-signup-dismissed'
+const SESSION_KEY = 'interest-signup-dismissed'
 
 export default function Layout({ children }) {
   const [modalOpen, setModalOpen] = useState(() => {
@@ -26,7 +26,7 @@ export default function Layout({ children }) {
           {children}
         </main>
         <Footer />
-        <PilotSignupModal isOpen={modalOpen} onClose={handleCloseModal} />
+        <InterestSignupModal isOpen={modalOpen} onClose={handleCloseModal} />
       </div>
     </SignupModalContext.Provider>
   )

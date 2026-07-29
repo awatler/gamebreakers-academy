@@ -12,24 +12,28 @@ Last updated: July 2026
 
 | Path | Page |
 |---|---|
-| `/` | Home — hero, mission, value cards, clinic signup modal |
+| `/` | Home — hero, mission, value cards, interest list modal |
 | `/team` | Meet the Team |
 | `/privacy` | Privacy (not in nav) |
 
-## Clinic signup (flag football)
+## Interest list signup
 
-- Modal: `src/components/PilotSignupModal.jsx`
-- Auto-opens on first visit via `src/components/Layout.jsx` + `sessionStorage` key `clinic-signup-dismissed`
-- Reopen via `SignupModalContext` + hero **Sign Up** button
-- API: `api/subscribe.js` → Mailchimp
-- Local dev: Vite proxies `/api` to production (`vite.config.js`)
+- Modal: `src/components/InterestSignupModal.jsx`
+- Auto-opens on first visit via `src/components/Layout.jsx` + `sessionStorage` key `interest-signup-dismissed`
+- Reopen via `SignupModalContext` + hero **Keep Me Posted** button
+- API: `api/subscribe.js` → Mailchimp, tag `Interest List - 2026`
+- Local dev: Vite proxies `/api` to production (`vite.config.js`), so submissions hit
+  the live audience. Use `MOCK_API=1 npm run dev` to mock the endpoint instead.
 
-**Clinic:** Saturday July 25th, 1PM–4:30PM, Parade Grounds Prospect Park Field #9, ages 7–14 (target; form does not hard-restrict ages).
+**Status:** The Saturday July 25th 2026 flag football clinic (Parade Grounds, Prospect
+Park, Field #9) has happened. The hero now thanks attendees and the form collects
+people who want to hear about future programming. Ages are still collected (required)
+to plan age groups; target range 7–14, but the form does not hard-restrict ages.
 
 ## Key files
 
 ```
-src/components/PilotSignupModal.jsx  — signup form UI
+src/components/InterestSignupModal.jsx — interest list form UI
 src/components/Layout.jsx            — modal auto-open
 src/context/SignupModalContext.jsx
 api/subscribe.js                     — Mailchimp integration

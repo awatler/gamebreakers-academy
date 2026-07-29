@@ -36,16 +36,13 @@ export default function Home() {
 
           <div className="mt-6 space-y-1">
             <p className="font-display text-2xl font-bold uppercase tracking-wide text-amber sm:text-3xl">
-              Flag Football Clinic
+              Thank You, Brooklyn
             </p>
             <p className="font-util text-base font-bold tracking-[0.12em] text-white/90 sm:text-lg">
-              Saturday, July 25th
-            </p>
-            <p className="font-util text-base font-bold tracking-[0.12em] text-white/90 sm:text-lg">
-              1PM-4:30PM
+              Our July flag football clinic was one for the books.
             </p>
             <p className="font-util text-base font-bold tracking-[0.08em] text-white/90 sm:text-lg">
-              Parade Grounds at Prospect Park, Field #9
+              More programming is on the way — be the first to know.
             </p>
           </div>
 
@@ -59,7 +56,7 @@ export default function Home() {
 
           >
 
-            Sign Up
+            Keep Me Posted
 
           </button>
 

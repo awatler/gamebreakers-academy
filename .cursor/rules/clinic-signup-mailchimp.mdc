@@ -1,33 +1,44 @@
 ---
-description: Clinic signup form and Mailchimp integration conventions
+description: Interest list signup form and Mailchimp integration conventions
 globs:
   - api/subscribe.js
-  - src/components/PilotSignupModal.jsx
+  - src/components/InterestSignupModal.jsx
   - MAILCHIMP-SETUP.md
   - docs/agent/**
 alwaysApply: false
 ---
 
-# Clinic signup & Mailchimp
+# Interest signup & Mailchimp
 
 Read `docs/agent/MAILCHIMP-SIGNUP.md` before changing the signup form or subscribe API.
 
-## Data model (parent + child headcount)
+The July 2026 clinic is over. The form now captures an ongoing interest list
+(tag `Interest List - 2026`), not registrations for a specific event.
+
+## Data model (parent + child ages)
 
 - **Parent record** at real email, `ROLE = Parent`, `CHLDAGES` = comma-separated ages
 - **Child records** at `clinic-{hash}-{N}@brooklyngamebreakers.com`, `ROLE = Player`, individual `AGE`
-- Do not put all children on clinic aliases only — parent must keep real email for campaigns
+- Keep the `clinic-` alias prefix — changing it duplicates rows for returning parents
+- Do not put all children on aliases only — parent must keep real email for campaigns
 - Do not use email subaddressing (`+bgaclinic2`) — Mailchimp rejects it
 
 ## Merge tags (max 10 chars)
 
 Use `PEMAIL`, `PNAME`, `CHINDEX`, `CHCOUNT`, `CHLDAGES`, `SIGNUPID` — never `PARENT_EMAIL` or `PARENT_EMAI`.
 
-## Headcount vs campaigns
+New merge fields must be created by hand in the Mailchimp dashboard first. Tags
+are created automatically by the API, so prefer a tag for new categorization.
 
-- Headcount: `ROLE = Player` + clinic tag
+## Segments
+
+- Interest list: `Interest List - 2026` tag
+- July clinic attendees: `Flag Football Clinic - July 2026` tag (historical, no longer applied)
+- Age counts: `ROLE = Player` (child alias rows only)
 - Campaigns: `ROLE = Parent` or exclude emails containing `clinic-`
 
 ## Local dev
 
-Vite proxies `/api` to production. Restart dev server after `vite.config.js` changes.
+`npm run dev` proxies `/api` to production — **form submissions write to the live
+audience.** Use `MOCK_API=1 npm run dev` to serve `/api/subscribe` locally instead.
+Restart the dev server after `vite.config.js` changes.

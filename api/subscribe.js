@@ -1,6 +1,6 @@
 import crypto from 'crypto'
 
-const CLINIC_TAG = 'Flag Football Clinic - July 2026'
+const INTEREST_TAG = 'Interest List - 2026'
 const MAX_CHILDREN = 5
 const FALLBACK_DOMAIN = 'brooklyngamebreakers.com'
 
@@ -33,6 +33,8 @@ function getSubscriberHash(email) {
   return crypto.createHash('md5').update(email.toLowerCase()).digest('hex')
 }
 
+// The `clinic-` prefix is retained so returning parents keep their existing child
+// rows and so campaign segments that exclude `clinic-` addresses keep working.
 function buildChildEmail(parentEmail, childIndex) {
   const normalized = parentEmail.trim().toLowerCase()
   const shortHash = getSubscriberHash(normalized).slice(0, 8)
@@ -57,7 +59,7 @@ function validateChildAges(ages) {
   }
 
   if (ages.length > MAX_CHILDREN) {
-    return `You can register up to ${MAX_CHILDREN} children per signup.`
+    return `You can add up to ${MAX_CHILDREN} children per signup.`
   }
 
   for (const childAge of ages) {
@@ -88,7 +90,7 @@ async function upsertMember({ memberUrl, authHeader, payload }) {
   return { ok: true }
 }
 
-async function applyClinicTag(memberUrl, authHeader) {
+async function applyInterestTag(memberUrl, authHeader) {
   try {
     const tagRes = await fetch(`${memberUrl}/tags`, {
       method: 'POST',
@@ -97,7 +99,7 @@ async function applyClinicTag(memberUrl, authHeader) {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        tags: [{ name: CLINIC_TAG, status: 'active' }],
+        tags: [{ name: INTEREST_TAG, status: 'active' }],
       }),
     })
 
@@ -191,7 +193,7 @@ export async function POST(request) {
         )
       }
 
-      await applyClinicTag(parentUrl, authHeader)
+      await applyInterestTag(parentUrl, authHeader)
 
       for (let index = 0; index < childAges.length; index += 1) {
         const childIndex = index + 1
@@ -231,7 +233,7 @@ export async function POST(request) {
           continue
         }
 
-        await applyClinicTag(memberUrl, authHeader)
+        await applyInterestTag(memberUrl, authHeader)
       }
 
       const registeredCount = childCount - failures.length
@@ -247,7 +249,7 @@ export async function POST(request) {
         console.error('Partial signup failures:', failures)
         return Response.json(
           {
-            error: `${registeredCount} of ${childCount} children registered. Please contact info@brooklyngamebreakers.com to finish signing up.`,
+            error: `${registeredCount} of ${childCount} children added. Please contact info@brooklyngamebreakers.com to finish joining the list.`,
             registeredCount,
             childCount,
             failures,
@@ -299,7 +301,7 @@ export async function POST(request) {
       )
     }
 
-    await applyClinicTag(memberUrl, authHeader)
+    await applyInterestTag(memberUrl, authHeader)
 
     return Response.json({ success: true, registeredCount: 1, childCount: 1 })
   } catch (err) {

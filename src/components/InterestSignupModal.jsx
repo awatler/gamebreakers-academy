@@ -8,10 +8,10 @@ const ROLE_OPTIONS = [
   { label: 'Community Partner', emoji: '🤝' },
 ]
 
-const CLINIC_DETAILS = [
-  { emoji: '📅', label: 'Date', value: 'Saturday, July 25th · 1PM–4:30PM' },
-  { emoji: '📍', label: 'Location', value: 'Parade Grounds at Prospect Park' },
-  { emoji: '🆓', label: 'Price', value: 'Free! (but donations are welcome)' },
+const LIST_DETAILS = [
+  { emoji: '📣', label: 'First to know', value: 'Hear about new clinics and programs before they fill up' },
+  { emoji: '🏈', label: 'What we run', value: 'Flag football, with more sports and creative programming on the way' },
+  { emoji: '🆓', label: 'Cost', value: 'Free and low-cost by design' },
   { emoji: '🏆', label: 'Ages', value: '7-14' },
 ]
 
@@ -26,7 +26,7 @@ function validateChildAges(ages) {
   }
 
   if (ages.length > MAX_CHILDREN) {
-    return `You can register up to ${MAX_CHILDREN} children per signup.`
+    return `You can add up to ${MAX_CHILDREN} children per signup.`
   }
 
   for (const childAge of ages) {
@@ -39,7 +39,7 @@ function validateChildAges(ages) {
   return null
 }
 
-export default function PilotSignupModal({ isOpen, onClose }) {
+export default function InterestSignupModal({ isOpen, onClose }) {
   const [name, setName] = useState('')
   const [phone, setPhone] = useState('')
   const [email, setEmail] = useState('')
@@ -59,7 +59,7 @@ export default function PilotSignupModal({ isOpen, onClose }) {
     const trimmedPhone = phone.trim()
 
     if (!trimmedEmail) {
-      setContactError('Please enter an email address so we can confirm your spot.')
+      setContactError('Please enter an email address so we can keep you posted.')
       return
     }
 
@@ -187,7 +187,7 @@ export default function PilotSignupModal({ isOpen, onClose }) {
       className="fixed inset-0 z-50 flex items-center justify-center p-4"
       role="dialog"
       aria-modal="true"
-      aria-labelledby="clinic-signup-title"
+      aria-labelledby="interest-signup-title"
     >
       <div
         className="absolute inset-0 bg-accent/60 backdrop-blur-sm"
@@ -211,20 +211,21 @@ export default function PilotSignupModal({ isOpen, onClose }) {
                 🏈
               </span>
               <h2
-                id="clinic-signup-title"
+                id="interest-signup-title"
                 className="heading-display min-w-0 flex-1 text-sm leading-snug sm:text-base md:text-lg lg:whitespace-nowrap"
               >
-                Join the Brooklyn Gamebreakers Flag Football Clinic
+                Stay in the loop with Brooklyn Gamebreakers
               </h2>
             </div>
 
             <p className="mt-3 text-sm text-muted">
-              Come down to learn flag football, make friends, and have a ton of fun!{' '}
-              <span aria-hidden>✨</span> Sign up to reserve your spot and receive more information.
+              Our July flag football clinic is a wrap — and it won&apos;t be the last.{' '}
+              <span aria-hidden>✨</span> Join the list and we&apos;ll reach out first when the next
+              one opens up.
             </p>
 
             <div className="mt-4 space-y-2 rounded-ui border border-border bg-seafoam px-4 py-3">
-              {CLINIC_DETAILS.map(({ emoji, label, value }) => (
+              {LIST_DETAILS.map(({ emoji, label, value }) => (
                 <div key={label} className="flex gap-2 text-sm text-ink">
                   <span className="mt-0.5 shrink-0 text-base" aria-hidden>
                     {emoji}
@@ -239,11 +240,11 @@ export default function PilotSignupModal({ isOpen, onClose }) {
             <form onSubmit={handleSubmit} className="mt-6 space-y-4">
               <div className="grid gap-4 sm:grid-cols-2">
                 <div className="sm:col-span-1">
-                  <label htmlFor="clinic-name" className="block text-sm font-semibold text-ink">
+                  <label htmlFor="interest-name" className="block text-sm font-semibold text-ink">
                     Name
                   </label>
                   <input
-                    id="clinic-name"
+                    id="interest-name"
                     type="text"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
@@ -254,11 +255,11 @@ export default function PilotSignupModal({ isOpen, onClose }) {
                 </div>
 
                 <div className="sm:col-span-1">
-                  <label htmlFor="clinic-email" className="block text-sm font-semibold text-ink">
+                  <label htmlFor="interest-email" className="block text-sm font-semibold text-ink">
                     Email
                   </label>
                   <input
-                    id="clinic-email"
+                    id="interest-email"
                     type="email"
                     value={email}
                     onChange={(e) => {
@@ -272,11 +273,11 @@ export default function PilotSignupModal({ isOpen, onClose }) {
                 </div>
 
                 <div className="sm:col-span-1">
-                  <label htmlFor="clinic-phone" className="block text-sm font-semibold text-ink">
+                  <label htmlFor="interest-phone" className="block text-sm font-semibold text-ink">
                     Phone <span className="font-normal text-muted">(optional)</span>
                   </label>
                   <input
-                    id="clinic-phone"
+                    id="interest-phone"
                     type="tel"
                     value={phone}
                     onChange={(e) => {
@@ -289,11 +290,11 @@ export default function PilotSignupModal({ isOpen, onClose }) {
                 </div>
 
                 <div className="sm:col-span-1">
-                  <label htmlFor="clinic-zip" className="block text-sm font-semibold text-ink">
+                  <label htmlFor="interest-zip" className="block text-sm font-semibold text-ink">
                     Zip Code <span className="font-normal text-muted">(optional)</span>
                   </label>
                   <input
-                    id="clinic-zip"
+                    id="interest-zip"
                     type="text"
                     inputMode="numeric"
                     value={zip}
@@ -308,7 +309,7 @@ export default function PilotSignupModal({ isOpen, onClose }) {
                 <div>
                   <div className="flex items-center justify-between gap-3">
                     <p className="text-sm font-semibold text-ink">
-                      Children attending <span aria-hidden>🎂</span>
+                      Your children&apos;s ages <span aria-hidden>🎂</span>
                     </p>
                     {children.length < MAX_CHILDREN && (
                       <button
@@ -327,13 +328,13 @@ export default function PilotSignupModal({ isOpen, onClose }) {
                       <div key={index} className="flex items-end gap-3">
                         <div className="min-w-0 flex-1">
                           <label
-                            htmlFor={`clinic-child-age-${index}`}
+                            htmlFor={`interest-child-age-${index}`}
                             className="block text-sm font-semibold text-ink"
                           >
                             Child {index + 1} age
                           </label>
                           <input
-                            id={`clinic-child-age-${index}`}
+                            id={`interest-child-age-${index}`}
                             type="number"
                             min={1}
                             max={99}
@@ -360,18 +361,18 @@ export default function PilotSignupModal({ isOpen, onClose }) {
                   </div>
 
                   <p className="mt-2 text-xs text-muted">
-                    Register up to {MAX_CHILDREN} children per signup.
+                    Ages help us plan the right age groups. Add up to {MAX_CHILDREN} children.
                   </p>
                 </div>
               )}
 
               {role === 'Player' && (
                 <div>
-                  <label htmlFor="clinic-age" className="block text-sm font-semibold text-ink">
+                  <label htmlFor="interest-age" className="block text-sm font-semibold text-ink">
                     Age <span aria-hidden>🎂</span>
                   </label>
                   <input
-                    id="clinic-age"
+                    id="interest-age"
                     type="number"
                     min={1}
                     max={99}
@@ -403,7 +404,7 @@ export default function PilotSignupModal({ isOpen, onClose }) {
                     >
                       <input
                         type="radio"
-                        name="clinic-role"
+                        name="interest-role"
                         value={label}
                         checked={role === label}
                         onChange={() => handleRoleChange(label)}
@@ -427,27 +428,26 @@ export default function PilotSignupModal({ isOpen, onClose }) {
                 disabled={isSubmitting}
                 className="mt-4 w-full rounded-full bg-amber px-4 py-3 font-util text-sm font-bold tracking-[0.06em] text-ink transition-colors hover:bg-amber/90 disabled:cursor-not-allowed disabled:opacity-60"
               >
-                {isSubmitting ? 'Signing up…' : "Let's Go!"}
+                {isSubmitting ? 'Adding you…' : 'Keep Me Posted'}
               </button>
             </form>
           </>
         ) : (
           <div className="pr-8">
-            <h2 id="clinic-signup-title" className="heading-display text-xl sm:text-2xl">
-              You&apos;re in! <span aria-hidden>🎉</span>
+            <h2 id="interest-signup-title" className="heading-display text-xl sm:text-2xl">
+              You&apos;re on the list! <span aria-hidden>🎉</span>
             </h2>
             {role === 'Parent' && registeredCount > 1 && (
               <p className="mt-3 text-sm font-semibold text-ink">
-                {registeredCount} children registered.
+                {registeredCount} children added.
               </p>
             )}
             {role === 'Parent' && registeredCount === 1 && (
-              <p className="mt-3 text-sm font-semibold text-ink">1 child registered.</p>
+              <p className="mt-3 text-sm font-semibold text-ink">1 child added.</p>
             )}
             <p className="mt-3 text-sm leading-relaxed text-muted">
-              We&apos;re excited to see you on July 25th!{' '}
-              <span aria-hidden>🏈</span> If you have cleats and gloves those are welcome but not
-              required.
+              We&apos;ll email you as soon as the next clinic or program is announced.{' '}
+              <span aria-hidden>🏈</span> No spam — just Gamebreakers news.
             </p>
             <p className="mt-3 text-sm leading-relaxed text-muted">
               Please contact{' '}
