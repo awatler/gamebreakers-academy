@@ -8,6 +8,7 @@ import BrandLogo from './BrandLogo'
 
 const navLinks = [
   { to: '/', label: 'Home' },
+  { to: '/summer-clinic-2026', label: 'Summer Clinic 2026' },
   { to: '/team', label: 'Team' },
   {
     href: 'https://venmo.com/u/BrooklynGamebreakers',

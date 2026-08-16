@@ -18,6 +18,13 @@ dist/
 *.swo
 .DS_Store
 
+# Source media — originals stay local. Web-ready copies live in public/images/.
+# "Content /" alone is ~10GB of raw clinic video and must never be committed.
+/Clinic Pics/
+/Content /
+/headshots/
+*.tsv
+
 # Logs
 npm-debug.log*
 yarn-debug.log*
