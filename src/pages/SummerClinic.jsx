@@ -4,6 +4,7 @@ import { CalendarDays, MapPin, Users } from 'lucide-react'
 import PhotoLightbox from '../components/PhotoLightbox'
 import { galleryPhotos, heroPhoto } from '../data/clinicGallery'
 import { useSignupModal } from '../context/SignupModalContext'
+import { trackEvent } from '../lib/analytics'
 
 const facts = [
   { icon: CalendarDays, label: 'Saturday, July 25, 2026' },
@@ -15,6 +16,14 @@ export default function SummerClinic() {
   const { openSignupModal } = useSignupModal()
   const [lightboxIndex, setLightboxIndex] = useState(null)
   const triggerRefs = useRef([])
+
+  const openLightbox = (index) => {
+    setLightboxIndex(index)
+    trackEvent('select_content', {
+      content_type: 'clinic_photo',
+      item_id: galleryPhotos[index].slug,
+    })
+  }
 
   const closeLightbox = () => {
     const lastIndex = lightboxIndex
@@ -78,7 +87,7 @@ export default function SummerClinic() {
                 ref={(node) => {
                   triggerRefs.current[index] = node
                 }}
-                onClick={() => setLightboxIndex(index)}
+                onClick={() => openLightbox(index)}
                 className="group block w-full overflow-hidden rounded-ui border border-border bg-white shadow-sm transition-shadow hover:shadow-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-forest focus-visible:ring-offset-2"
                 aria-label={`View larger: ${photo.alt}`}
               >
