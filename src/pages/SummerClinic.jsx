@@ -76,7 +76,7 @@ export default function SummerClinic() {
           From the Field
         </h2>
         <p className="mt-2 text-sm text-muted">
-          {galleryPhotos.length} photos from the day. Select any photo to view it larger.
+          More photos from the day. Select any photo to view it larger.
         </p>
 
         <ul className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
