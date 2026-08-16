@@ -75,7 +75,7 @@ export default function PhotoLightbox({ photos, index, onClose, onIndexChange })
       </div>
 
       <div
-        className="relative flex min-h-0 flex-1 items-center justify-center px-4 sm:px-20"
+        className="relative flex min-h-0 flex-1 items-center justify-center px-4 pb-5 sm:px-20 sm:pb-6"
         onClick={(event) => {
           if (event.target === event.currentTarget) onClose()
         }}
@@ -104,10 +104,6 @@ export default function PhotoLightbox({ photos, index, onClose, onIndexChange })
           <ChevronRight size={24} aria-hidden />
         </button>
       </div>
-
-      <p className="mx-auto max-w-2xl px-4 py-5 text-center text-sm leading-relaxed text-white/75">
-        {photo.alt}
-      </p>
     </div>
   )
 }
