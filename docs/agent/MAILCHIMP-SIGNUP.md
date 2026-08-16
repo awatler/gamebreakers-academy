@@ -38,6 +38,10 @@ Only the tag changed; the parent + child data model below is unchanged.
 
 Age validation: integers 1–99 (not restricted to 7–14).
 
+On a successful submit the form fires a GA4 `generate_lead` event via
+`src/lib/analytics.js` with `method`, `role`, and `child_count`. Never add names,
+emails, phone numbers, or ages to that payload — Google prohibits PII.
+
 ## API flow (`api/subscribe.js`)
 
 For `role === "Parent"`:

@@ -14,6 +14,7 @@ const navLinks = [
     label: 'Donate',
     external: true,
   },
+  { to: '/privacy', label: 'Privacy' },
 ]
 
 

@@ -1,6 +1,8 @@
 import { useState } from 'react'
 import { X, Plus, Trash2 } from 'lucide-react'
 
+import { trackEvent } from '../lib/analytics'
+
 const ROLE_OPTIONS = [
   { label: 'Parent', emoji: '👨‍👩‍👧' },
   { label: 'Player', emoji: '🏃' },
@@ -134,6 +136,12 @@ export default function InterestSignupModal({ isOpen, onClose }) {
 
       setRegisteredCount(data.registeredCount || (role === 'Parent' ? payload.children.length : 1))
       setSubmitted(true)
+
+      trackEvent('generate_lead', {
+        method: 'interest_signup_modal',
+        role,
+        child_count: role === 'Parent' ? payload.children.length : 0,
+      })
     } catch {
       setContactError('Something went wrong. Please try again.')
     } finally {
