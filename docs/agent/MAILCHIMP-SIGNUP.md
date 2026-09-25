@@ -1,12 +1,12 @@
 # Mailchimp signup — data model & conventions
 
-Last updated: July 2026 — post-clinic interest list
+Last updated: September 2026 — Fall Clinic registrations
 
 ## Current purpose
 
-The July 2026 flag football clinic is over. The same form and API now collect an
-ongoing **interest list** of people who want to hear about future programming.
-Only the tag changed; the parent + child data model below is unchanged.
+The form and API register people for the **Fall 2026 flag football clinic**
+(Saturday, October 24th). New signups receive **only** the tag
+`Flag Football Clinic - Fall 2026`. The parent + child data model below is unchanged.
 
 ## Architecture decision (do not regress)
 
@@ -19,7 +19,8 @@ Only the tag changed; the parent + child data model below is unchanged.
 
 - `{hash}` = first 8 chars of MD5(parent email)
 - `N` = 1-based child index within signup
-- Tag on **both** parent and child rows: `Interest List - 2026`
+- Tag on **both** parent and child rows: `Flag Football Clinic - Fall 2026` only
+  (do not also apply `Interest List - 2026`)
 - The `clinic-` alias prefix is intentionally unchanged — renaming it would create
   duplicate child rows for parents who already signed up, and would break campaign
   segments that exclude addresses containing `clinic-`
@@ -47,9 +48,9 @@ emails, phone numbers, or ages to that payload — Google prohibits PII.
 For `role === "Parent"`:
 
 1. Upsert **parent** at real email (`ROLE: Parent`, `CHCOUNT`, `CHLDAGES`, `SIGNUPID`)
-2. Apply interest tag to parent
+2. Apply Fall Clinic tag to parent
 3. For each child: upsert **child alias** (`ROLE: Player`, `AGE`, `PEMAIL`, `PNAME`, `CHINDEX`, `CHCOUNT`, `SIGNUPID`)
-4. Apply interest tag to each child
+4. Apply Fall Clinic tag to each child
 5. Partial failure returns `502` if some children fail after parent succeeds
 
 For other roles: single upsert at submitter email (unchanged).
@@ -77,7 +78,10 @@ Constants in code: `MERGE` object in `api/subscribe.js`.
 
 **Email campaigns:** segment `ROLE = Parent` OR exclude `Email Address` contains `clinic-`
 
-**Interest list:** rows tagged `Interest List - 2026`
+**Fall clinic (current):** rows tagged `Flag Football Clinic - Fall 2026`
+
+**Interest list (historical):** rows tagged `Interest List - 2026` — stay-informed
+period between clinics; that tag is no longer applied to new signups
 
 **July clinic attendees:** rows tagged `Flag Football Clinic - July 2026` (historical —
 that tag is no longer applied to new signups)

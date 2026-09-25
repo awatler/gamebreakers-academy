@@ -25,11 +25,11 @@ Last updated: August 2026
   gallery, where a popup would cover the photos a visitor came to see. Those pages carry
   their own CTA instead
 - Reopen via `SignupModalContext` + hero **Sign Up** button
-- API: `api/subscribe.js` → Mailchimp, tag still `Interest List - 2026` (clinic-specific tag TBD)
+- API: `api/subscribe.js` → Mailchimp, tag `Flag Football Clinic - Fall 2026` only
 
-**Status:** Fall flag football clinic is live on the site — **Saturday, October 24th, 2026**,
-3PM–6PM, Prospect Park Parade Grounds Field #5. Hero and signup modal show clinic details.
-Mailchimp still applies the interest-list tag until a clinic-specific tagging plan is set.
+**Status:** Fall flag football clinic is live — **Saturday, October 24th, 2026**,
+3PM–6PM, Prospect Park Parade Grounds Field #5. Hero and signup modal show Fall Clinic
+details. New Mailchimp signups get **only** the Fall Clinic tag.
 
 ## Analytics
 

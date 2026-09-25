@@ -1,6 +1,6 @@
 import crypto from 'crypto'
 
-const INTEREST_TAG = 'Interest List - 2026'
+const CLINIC_TAG = 'Flag Football Clinic - Fall 2026'
 const MAX_CHILDREN = 5
 const FALLBACK_DOMAIN = 'brooklyngamebreakers.com'
 
@@ -90,7 +90,7 @@ async function upsertMember({ memberUrl, authHeader, payload }) {
   return { ok: true }
 }
 
-async function applyInterestTag(memberUrl, authHeader) {
+async function applyClinicTag(memberUrl, authHeader) {
   try {
     const tagRes = await fetch(`${memberUrl}/tags`, {
       method: 'POST',
@@ -99,7 +99,7 @@ async function applyInterestTag(memberUrl, authHeader) {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        tags: [{ name: INTEREST_TAG, status: 'active' }],
+        tags: [{ name: CLINIC_TAG, status: 'active' }],
       }),
     })
 
@@ -193,7 +193,7 @@ export async function POST(request) {
         )
       }
 
-      await applyInterestTag(parentUrl, authHeader)
+      await applyClinicTag(parentUrl, authHeader)
 
       for (let index = 0; index < childAges.length; index += 1) {
         const childIndex = index + 1
@@ -233,7 +233,7 @@ export async function POST(request) {
           continue
         }
 
-        await applyInterestTag(memberUrl, authHeader)
+        await applyClinicTag(memberUrl, authHeader)
       }
 
       const registeredCount = childCount - failures.length
@@ -301,7 +301,7 @@ export async function POST(request) {
       )
     }
 
-    await applyInterestTag(memberUrl, authHeader)
+    await applyClinicTag(memberUrl, authHeader)
 
     return Response.json({ success: true, registeredCount: 1, childCount: 1 })
   } catch (err) {

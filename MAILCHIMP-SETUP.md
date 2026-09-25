@@ -259,13 +259,13 @@ Update `InterestSignupModal.jsx` so `handleSubmit`:
 }
 ```
 
-The API creates **one Mailchimp row per child**, each tagged `Interest List - 2026`.
+The API creates **one Mailchimp row per child**, each tagged `Flag Football Clinic - Fall 2026`.
 
 ### Clinic headcount
 
 Filter your audience (or export CSV) where:
 
-- Tag = `Flag Football Clinic - July 2026`
+- Tag = `Flag Football Clinic - Fall 2026`
 - `ROLE` = `Player`
 - `AGE` is between 7 and 14
 
