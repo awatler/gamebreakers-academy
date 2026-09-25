@@ -107,10 +107,10 @@ export default function SummerClinic() {
       </section>
 
       <section className="mt-14 rounded-ui border border-border bg-seafoam px-6 py-10 text-center">
-        <h2 className="heading-display text-xl sm:text-2xl">Next up: October 24th</h2>
+        <h2 className="heading-display text-xl sm:text-2xl">Next up: Fall Clinic</h2>
         <p className="mx-auto mt-3 max-w-xl text-sm leading-relaxed text-muted">
-          Flag football clinic at Prospect Park Parade Grounds, Field #5 · 3PM–6PM. Sign up to
-          reserve your spot.
+          Flag football on Saturday, October 24th at Prospect Park Parade Grounds, Field #5 ·
+          3PM–6PM. Sign up to reserve your spot.
         </p>
         <button
           type="button"

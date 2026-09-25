@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { Link } from 'react-router-dom'
 import { X, Plus, Trash2 } from 'lucide-react'
 
 import { trackEvent } from '../lib/analytics'
@@ -222,7 +223,7 @@ export default function InterestSignupModal({ isOpen, onClose }) {
                 id="interest-signup-title"
                 className="heading-display min-w-0 flex-1 text-sm leading-snug sm:text-base md:text-lg lg:whitespace-nowrap"
               >
-                Join the Brooklyn Gamebreakers Flag Football Clinic
+                Join the Brooklyn Gamebreakers Flag Football Fall Clinic
               </h2>
             </div>
 
@@ -243,6 +244,17 @@ export default function InterestSignupModal({ isOpen, onClose }) {
                 </div>
               ))}
             </div>
+
+            <p className="mt-3 text-sm text-muted">
+              Questions?{' '}
+              <Link
+                to="/summer-clinic-2026"
+                onClick={handleClose}
+                className="font-semibold text-forest underline decoration-forest/30 underline-offset-2 transition-colors hover:text-green-deep hover:decoration-green-deep"
+              >
+                Check out the recap from our Summer Clinic
+              </Link>
+            </p>
 
             <form onSubmit={handleSubmit} className="mt-6 space-y-4">
               <div className="grid gap-4 sm:grid-cols-2">
@@ -453,9 +465,20 @@ export default function InterestSignupModal({ isOpen, onClose }) {
               <p className="mt-3 text-sm font-semibold text-ink">1 child registered.</p>
             )}
             <p className="mt-3 text-sm leading-relaxed text-muted">
-              We&apos;re excited to see you on October 24th!{' '}
+              We&apos;re excited to see you at the Fall Clinic on October 24th!{' '}
               <span aria-hidden>🏈</span> If you have cleats and gloves those are welcome but not
               required.
+            </p>
+            <p className="mt-3 text-sm leading-relaxed text-muted">
+              Questions?{' '}
+              <Link
+                to="/summer-clinic-2026"
+                onClick={handleClose}
+                className="font-semibold text-forest underline decoration-forest/30 underline-offset-2 transition-colors hover:text-green-deep hover:decoration-green-deep"
+              >
+                Check out the recap from our Summer Clinic
+              </Link>
+              .
             </p>
             <p className="mt-3 text-sm leading-relaxed text-muted">
               Please contact{' '}
