@@ -466,11 +466,14 @@ export default function InterestSignupModal({ isOpen, onClose }) {
             )}
             <p className="mt-3 text-sm leading-relaxed text-muted">
               We&apos;re excited to see you at the Fall Clinic on October 24th!{' '}
-              <span aria-hidden>🏈</span> If you have cleats and gloves those are welcome but not
-              required.
+              <span aria-hidden>🏈</span>
             </p>
             <p className="mt-3 text-sm leading-relaxed text-muted">
-              Questions?{' '}
+              Stay tuned for more details by email. If you have cleats and gloves those are welcome
+              but not required.
+            </p>
+            <p className="mt-3 text-sm leading-relaxed text-muted">
+              Want to know more about what to expect?{' '}
               <Link
                 to="/summer-clinic-2026"
                 onClick={handleClose}
