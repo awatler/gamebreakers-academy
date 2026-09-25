@@ -17,22 +17,19 @@ Last updated: August 2026
 | `/team` | Meet the Team |
 | `/privacy` | Privacy (footer only) |
 
-## Interest list signup
+## Interest list / clinic signup
 
 - Modal: `src/components/InterestSignupModal.jsx`
 - Auto-opens on first visit via `src/components/Layout.jsx` + `sessionStorage` key `interest-signup-dismissed`
 - Suppressed on the pages in `NO_AUTO_OPEN_PATHS` (`Layout.jsx`) — currently the clinic
   gallery, where a popup would cover the photos a visitor came to see. Those pages carry
   their own CTA instead
-- Reopen via `SignupModalContext` + hero **Keep Me Posted** button
-- API: `api/subscribe.js` → Mailchimp, tag `Interest List - 2026`
-- Local dev: Vite proxies `/api` to production (`vite.config.js`), so submissions hit
-  the live audience. Use `MOCK_API=1 npm run dev` to mock the endpoint instead.
+- Reopen via `SignupModalContext` + hero **Sign Up** button
+- API: `api/subscribe.js` → Mailchimp, tag still `Interest List - 2026` (clinic-specific tag TBD)
 
-**Status:** The Saturday July 25th 2026 flag football clinic (Parade Grounds, Prospect
-Park, Field #9) has happened. The hero now thanks attendees and the form collects
-people who want to hear about future programming. Ages are still collected (required)
-to plan age groups; target range 7–14, but the form does not hard-restrict ages.
+**Status:** Fall flag football clinic is live on the site — **Saturday, October 24th, 2026**,
+3PM–6PM, Prospect Park Parade Grounds Field #5. Hero and signup modal show clinic details.
+Mailchimp still applies the interest-list tag until a clinic-specific tagging plan is set.
 
 ## Analytics
 

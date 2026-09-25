@@ -107,17 +107,17 @@ export default function SummerClinic() {
       </section>
 
       <section className="mt-14 rounded-ui border border-border bg-seafoam px-6 py-10 text-center">
-        <h2 className="heading-display text-xl sm:text-2xl">Want in on the next one?</h2>
+        <h2 className="heading-display text-xl sm:text-2xl">Next up: October 24th</h2>
         <p className="mx-auto mt-3 max-w-xl text-sm leading-relaxed text-muted">
-          More programming is on the way. Join the interest list and we&apos;ll reach out first when
-          the next clinic opens up.
+          Flag football clinic at Prospect Park Parade Grounds, Field #5 · 3PM–6PM. Sign up to
+          reserve your spot.
         </p>
         <button
           type="button"
           onClick={openSignupModal}
           className="mt-6 inline-flex items-center justify-center rounded-full bg-amber px-8 py-3 font-util text-base font-bold tracking-[0.08em] text-ink shadow-md transition-all duration-200 ease-in-out hover:scale-[1.03] hover:bg-amber/90"
         >
-          Keep Me Posted
+          Sign Up
         </button>
       </section>
 

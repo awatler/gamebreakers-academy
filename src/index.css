@@ -115,12 +115,13 @@ body {
 .hero-banner-bg {
   background-size: cover;
   background-repeat: no-repeat;
-  background-position: center center;
-  filter: grayscale(100%) contrast(1.15) brightness(0.7);
+  /* Lower % = more sky up top, group sits below the title */
+  background-position: center 22%;
+  filter: grayscale(100%) contrast(1.2) brightness(0.62);
 }
 @media (min-width: 640px) {
   .hero-banner-bg {
-    background-position: center 35%;
+    background-position: center 18%;
   }
 }
 

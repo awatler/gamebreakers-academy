@@ -10,10 +10,10 @@ const ROLE_OPTIONS = [
   { label: 'Community Partner', emoji: '🤝' },
 ]
 
-const LIST_DETAILS = [
-  { emoji: '📣', label: 'First to know', value: 'Hear about new clinics and programs before they fill up' },
-  { emoji: '🏈', label: 'What we run', value: 'Flag football, with more sports and creative programming on the way' },
-  { emoji: '🆓', label: 'Cost', value: 'Free and low-cost by design' },
+const CLINIC_DETAILS = [
+  { emoji: '📅', label: 'Date', value: 'Saturday, October 24th · 3PM–6PM' },
+  { emoji: '📍', label: 'Location', value: 'Prospect Park Parade Grounds, Field #5' },
+  { emoji: '🆓', label: 'Price', value: 'Free! (but donations are welcome)' },
   { emoji: '🏆', label: 'Ages', value: '7-14' },
 ]
 
@@ -138,7 +138,7 @@ export default function InterestSignupModal({ isOpen, onClose }) {
       setSubmitted(true)
 
       trackEvent('generate_lead', {
-        method: 'interest_signup_modal',
+        method: 'clinic_signup_modal',
         role,
         child_count: role === 'Parent' ? payload.children.length : 0,
       })
@@ -222,18 +222,17 @@ export default function InterestSignupModal({ isOpen, onClose }) {
                 id="interest-signup-title"
                 className="heading-display min-w-0 flex-1 text-sm leading-snug sm:text-base md:text-lg lg:whitespace-nowrap"
               >
-                Stay in the loop with Brooklyn Gamebreakers
+                Join the Brooklyn Gamebreakers Flag Football Clinic
               </h2>
             </div>
 
             <p className="mt-3 text-sm text-muted">
-              Our July flag football clinic is a wrap — and it won&apos;t be the last.{' '}
-              <span aria-hidden>✨</span> Join the list and we&apos;ll reach out first when the next
-              one opens up.
+              Come down to learn flag football, make friends, and have a ton of fun!{' '}
+              <span aria-hidden>✨</span> Sign up to reserve your spot and receive more information.
             </p>
 
             <div className="mt-4 space-y-2 rounded-ui border border-border bg-seafoam px-4 py-3">
-              {LIST_DETAILS.map(({ emoji, label, value }) => (
+              {CLINIC_DETAILS.map(({ emoji, label, value }) => (
                 <div key={label} className="flex gap-2 text-sm text-ink">
                   <span className="mt-0.5 shrink-0 text-base" aria-hidden>
                     {emoji}
@@ -436,26 +435,27 @@ export default function InterestSignupModal({ isOpen, onClose }) {
                 disabled={isSubmitting}
                 className="mt-4 w-full rounded-full bg-amber px-4 py-3 font-util text-sm font-bold tracking-[0.06em] text-ink transition-colors hover:bg-amber/90 disabled:cursor-not-allowed disabled:opacity-60"
               >
-                {isSubmitting ? 'Adding you…' : 'Keep Me Posted'}
+                {isSubmitting ? 'Signing up…' : "Let's Go!"}
               </button>
             </form>
           </>
         ) : (
           <div className="pr-8">
             <h2 id="interest-signup-title" className="heading-display text-xl sm:text-2xl">
-              You&apos;re on the list! <span aria-hidden>🎉</span>
+              You&apos;re in! <span aria-hidden>🎉</span>
             </h2>
             {role === 'Parent' && registeredCount > 1 && (
               <p className="mt-3 text-sm font-semibold text-ink">
-                {registeredCount} children added.
+                {registeredCount} children registered.
               </p>
             )}
             {role === 'Parent' && registeredCount === 1 && (
-              <p className="mt-3 text-sm font-semibold text-ink">1 child added.</p>
+              <p className="mt-3 text-sm font-semibold text-ink">1 child registered.</p>
             )}
             <p className="mt-3 text-sm leading-relaxed text-muted">
-              We&apos;ll email you as soon as the next clinic or program is announced.{' '}
-              <span aria-hidden>🏈</span> No spam — just Gamebreakers news.
+              We&apos;re excited to see you on October 24th!{' '}
+              <span aria-hidden>🏈</span> If you have cleats and gloves those are welcome but not
+              required.
             </p>
             <p className="mt-3 text-sm leading-relaxed text-muted">
               Please contact{' '}

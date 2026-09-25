@@ -22,11 +22,11 @@ export default function Home() {
 
       >
 
-        <div className="hero-banner-bg absolute inset-0" style={{ backgroundImage: "url('/images/flag-football-field.png')" }} aria-hidden />
+        <div className="hero-banner-bg absolute inset-0" style={{ backgroundImage: "url('/images/clinic-group-hero-bw.jpg')" }} aria-hidden />
 
         <div className="absolute inset-0 bg-gradient-to-b from-black/65 via-black/45 to-black/85" aria-hidden />
 
-        <div className="relative z-10 flex min-h-[600px] min-h-screen flex-col items-center justify-center px-6 py-16 text-center sm:px-8">
+        <div className="relative z-10 flex min-h-[600px] min-h-screen flex-col items-center justify-start px-6 pb-16 pt-[12vh] text-center sm:px-8 sm:pt-[14vh]">
 
           <h1 className="font-display text-4xl font-bold uppercase leading-[0.95] tracking-wide text-white sm:text-5xl md:text-6xl lg:text-7xl">
 
@@ -36,13 +36,16 @@ export default function Home() {
 
           <div className="mt-6 space-y-1">
             <p className="font-display text-2xl font-bold uppercase tracking-wide text-amber sm:text-3xl">
-              Thank You, Brooklyn
+              Flag Football Clinic
             </p>
             <p className="font-util text-base font-bold tracking-[0.12em] text-white/90 sm:text-lg">
-              Our July flag football clinic was one for the books.
+              Saturday, October 24th
+            </p>
+            <p className="font-util text-base font-bold tracking-[0.12em] text-white/90 sm:text-lg">
+              3PM-6PM
             </p>
             <p className="font-util text-base font-bold tracking-[0.08em] text-white/90 sm:text-lg">
-              More programming is on the way — be the first to know.
+              Prospect Park Parade Grounds, Field #5
             </p>
           </div>
 
@@ -56,7 +59,7 @@ export default function Home() {
 
           >
 
-            Keep Me Posted
+            Sign Up
 
           </button>
 
