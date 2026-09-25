@@ -3,6 +3,7 @@ import Layout from './components/Layout'
 import Home from './pages/Home'
 import Team from './pages/Team'
 import SummerClinic from './pages/SummerClinic'
+import Donate from './pages/Donate'
 import Privacy from './pages/Privacy'
 
 function App() {
@@ -12,6 +13,7 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/team" element={<Team />} />
         <Route path="/summer-clinic-2026" element={<SummerClinic />} />
+        <Route path="/donate" element={<Donate />} />
         <Route path="/privacy" element={<Privacy />} />
       </Routes>
     </Layout>

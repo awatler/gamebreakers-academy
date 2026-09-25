@@ -1,4 +1,6 @@
-const LAST_UPDATED = 'August 16, 2026'
+import { Link } from 'react-router-dom'
+
+const LAST_UPDATED = 'September 25, 2026'
 const CONTACT_EMAIL = 'info@brooklyngamebreakers.com'
 
 const linkClass = 'font-semibold text-forest transition-colors hover:text-green-deep'
@@ -178,8 +180,13 @@ export default function Privacy() {
 
       <Section title="Links to Other Sites">
         <p>
-          Our site links to services we do not control, including Instagram and Venmo. Those
-          services have their own privacy policies, and we are not responsible for their practices.
+          Our site links to services we do not control, including Instagram, Venmo, and Cash App.
+          Those services have their own privacy policies, and we are not responsible for their
+          practices. Donations are handled on our{' '}
+          <Link to="/donate" className={linkClass}>
+            Donate
+          </Link>{' '}
+          page, which links out to those payment apps.
           We encourage you to review them before sharing information there.
         </p>
       </Section>

@@ -1,6 +1,6 @@
 # Site state — Brooklyn Gamebreakers
 
-Last updated: August 2026
+Last updated: September 2026
 
 ## Stack
 
@@ -12,9 +12,10 @@ Last updated: August 2026
 
 | Path | Page |
 |---|---|
-| `/` | Home — hero, mission, value cards, interest list modal |
-| `/summer-clinic-2026` | Summer Clinic 2026 — recap copy + 27-photo gallery with lightbox |
+| `/` | Home — hero, mission, value cards, Fall Clinic signup modal |
+| `/summer-clinic-2026` | Summer Clinic 2026 — recap copy + photo gallery with lightbox |
 | `/team` | Meet the Team |
+| `/donate` | Donate — 501(c)(3) note, Venmo + Cash App links |
 | `/privacy` | Privacy (footer only) |
 
 ## Interest list / clinic signup

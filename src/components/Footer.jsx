@@ -10,11 +10,7 @@ const navLinks = [
   { to: '/', label: 'Home' },
   { to: '/summer-clinic-2026', label: 'Summer Clinic 2026' },
   { to: '/team', label: 'Team' },
-  {
-    href: 'https://venmo.com/u/BrooklynGamebreakers',
-    label: 'Donate',
-    external: true,
-  },
+  { to: '/donate', label: 'Donate' },
   { to: '/privacy', label: 'Privacy' },
 ]
 
@@ -56,6 +52,14 @@ export default function Footer() {
 
             </p>
 
+            <p className="mt-3 text-xs leading-relaxed text-white/55">
+
+              Brooklyn Gamebreakers is a 501(c)(3) nonprofit organization. Contributions are
+
+              tax-deductible to the extent allowed by law.
+
+            </p>
+
           </div>
 
 
@@ -66,23 +70,12 @@ export default function Footer() {
 
               {navLinks.map((link) => (
                 <li key={link.label}>
-                  {link.external ? (
-                    <a
-                      href={link.href}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="font-util text-sm font-bold text-white/80 transition-colors hover:text-white"
-                    >
-                      {link.label}
-                    </a>
-                  ) : (
-                    <Link
-                      to={link.to}
-                      className="font-util text-sm font-bold text-white/80 transition-colors hover:text-white"
-                    >
-                      {link.label}
-                    </Link>
-                  )}
+                  <Link
+                    to={link.to}
+                    className="font-util text-sm font-bold text-white/80 transition-colors hover:text-white"
+                  >
+                    {link.label}
+                  </Link>
                 </li>
               ))}
 

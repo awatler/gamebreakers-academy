@@ -7,42 +7,16 @@ const navLinks = [
   { to: '/', label: 'Home' },
   { to: '/summer-clinic-2026', label: 'Summer Clinic 2026' },
   { to: '/team', label: 'Meet the Team' },
-  {
-    href: 'https://venmo.com/u/BrooklynGamebreakers',
-    label: 'Donate',
-    external: true,
-  },
+  { to: '/donate', label: 'Donate' },
 ]
-
-function NavItem({ to, href, label, external, className, onClick }) {
-  if (external) {
-    return (
-      <a
-        href={href}
-        target="_blank"
-        rel="noopener noreferrer"
-        onClick={onClick}
-        className={className}
-      >
-        {label}
-      </a>
-    )
-  }
-
-  return (
-    <Link to={to} onClick={onClick} className={className}>
-      {label}
-    </Link>
-  )
-}
 
 export default function Navbar() {
   const location = useLocation()
   const [mobileOpen, setMobileOpen] = useState(false)
 
-  const linkClass = (to, external) =>
+  const linkClass = (to) =>
     `font-util text-sm font-bold transition-colors duration-200 ease-in-out hover:text-forest ${
-      !external && location.pathname === to ? 'text-forest' : 'text-muted'
+      location.pathname === to ? 'text-forest' : 'text-muted'
     }`
 
   return (
@@ -57,12 +31,11 @@ export default function Navbar() {
         </Link>
 
         <ul className="hidden items-center gap-8 md:flex">
-          {navLinks.map((link) => (
-            <li key={link.label}>
-              <NavItem
-                {...link}
-                className={linkClass(link.to, link.external)}
-              />
+          {navLinks.map(({ to, label }) => (
+            <li key={label}>
+              <Link to={to} className={linkClass(to)}>
+                {label}
+              </Link>
             </li>
           ))}
         </ul>
@@ -80,13 +53,15 @@ export default function Navbar() {
       {mobileOpen && (
         <div className="border-t border-border bg-cream px-4 py-4 md:hidden">
           <ul className="flex flex-col gap-4">
-            {navLinks.map((link) => (
-              <li key={link.label}>
-                <NavItem
-                  {...link}
+            {navLinks.map(({ to, label }) => (
+              <li key={label}>
+                <Link
+                  to={to}
                   onClick={() => setMobileOpen(false)}
-                  className={`block ${linkClass(link.to, link.external)}`}
-                />
+                  className={`block ${linkClass(to)}`}
+                >
+                  {label}
+                </Link>
               </li>
             ))}
           </ul>
