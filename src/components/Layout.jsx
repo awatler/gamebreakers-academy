@@ -9,7 +9,7 @@ const SESSION_KEY = 'interest-signup-dismissed'
 
 // Pages that make their own signup pitch. Popping the modal over them just
 // buries the content a visitor arrived for.
-const NO_AUTO_OPEN_PATHS = ['/summer-clinic-2026']
+const NO_AUTO_OPEN_PATHS = ['/summer-clinic-2026', '/donate']
 
 export default function Layout({ children }) {
   const location = useLocation()
