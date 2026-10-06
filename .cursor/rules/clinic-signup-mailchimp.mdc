@@ -15,10 +15,11 @@ Read `docs/agent/MAILCHIMP-SIGNUP.md` before changing the signup form or subscri
 The form currently registers people for the **Fall 2026** flag football clinic
 (tag `Flag Football Clinic - Fall 2026` only — do not also apply the interest list tag).
 
-## Data model (parent + child ages)
+## Data model (parent + child)
 
-- **Parent record** at real email, `ROLE = Parent`, `CHLDAGES` = comma-separated ages
-- **Child records** at `clinic-{hash}-{N}@brooklyngamebreakers.com`, `ROLE = Player`, individual `AGE`
+- **Parent record** at real email, `ROLE = Parent`, `FNAME`/`LNAME` = parent name, `CHLDAGES` = comma-separated ages
+- **Child records** at `clinic-{hash}-{N}@brooklyngamebreakers.com`, `ROLE = Player`, `FNAME`/`LNAME` = **child** name, individual `AGE`, `PNAME` = parent name
+- No new merge fields for child names — use built-in `FNAME`/`LNAME` on Player rows
 - Keep the `clinic-` alias prefix — changing it duplicates rows for returning parents
 - Do not put all children on aliases only — parent must keep real email for campaigns
 - Do not use email subaddressing (`+bgaclinic2`) — Mailchimp rejects it

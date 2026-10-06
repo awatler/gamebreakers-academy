@@ -23,22 +23,34 @@ const MAX_CHILDREN = 5
 const inputClass =
   'mt-1 w-full rounded-ui border border-border bg-white px-3 py-2.5 text-ink placeholder-muted/60 focus:border-forest focus:outline-none focus:ring-1 focus:ring-forest'
 
-function validateChildAges(ages) {
-  if (ages.length < 1) {
-    return 'Please add at least one child age.'
+function emptyChild() {
+  return { name: '', age: '' }
+}
+
+function validateChildren(children) {
+  if (children.length < 1) {
+    return 'Please add at least one child.'
   }
 
-  if (ages.length > MAX_CHILDREN) {
+  if (children.length > MAX_CHILDREN) {
     return `You can add up to ${MAX_CHILDREN} children per signup.`
   }
 
-  for (const childAge of ages) {
-    const parsed = Number(childAge)
+  for (const child of children) {
+    const parsed = Number(child.age)
     if (!Number.isInteger(parsed) || parsed < 1 || parsed > 99) {
       return 'Please enter a valid age for each child.'
     }
   }
 
+  return null
+}
+
+function validatePlayerAge(ageValue) {
+  const parsed = Number(ageValue)
+  if (!Number.isInteger(parsed) || parsed < 1 || parsed > 99) {
+    return 'Please enter a valid age for the player.'
+  }
   return null
 }
 
@@ -48,7 +60,7 @@ export default function InterestSignupModal({ isOpen, onClose }) {
   const [email, setEmail] = useState('')
   const [role, setRole] = useState('Parent')
   const [age, setAge] = useState('')
-  const [children, setChildren] = useState([''])
+  const [children, setChildren] = useState([emptyChild()])
   const [zip, setZip] = useState('')
   const [submitted, setSubmitted] = useState(false)
   const [registeredCount, setRegisteredCount] = useState(1)
@@ -72,18 +84,17 @@ export default function InterestSignupModal({ isOpen, onClose }) {
     }
 
     if (role === 'Parent') {
-      const childAges = children.map((childAge) => childAge.trim()).filter(Boolean)
-      const ageError = validateChildAges(childAges)
-      if (ageError) {
-        setContactError(ageError)
+      const childError = validateChildren(children)
+      if (childError) {
+        setContactError(childError)
         return
       }
     }
 
     if (role === 'Player') {
-      const ageError = validateChildAges([age.trim()])
+      const ageError = validatePlayerAge(age.trim())
       if (ageError) {
-        setContactError(ageError.replace('child', 'player'))
+        setContactError(ageError)
         return
       }
     }
@@ -101,10 +112,10 @@ export default function InterestSignupModal({ isOpen, onClose }) {
       }
 
       if (role === 'Parent') {
-        payload.children = children
-          .map((childAge) => childAge.trim())
-          .filter(Boolean)
-          .map((childAge) => ({ age: childAge }))
+        payload.children = children.map((child) => ({
+          name: child.name.trim(),
+          age: child.age.trim(),
+        }))
       } else if (role === 'Player') {
         payload.age = age.trim()
       }
@@ -154,7 +165,7 @@ export default function InterestSignupModal({ isOpen, onClose }) {
     setSubmitted(false)
     setIsSubmitting(false)
     setAge('')
-    setChildren([''])
+    setChildren([emptyChild()])
     setRegisteredCount(1)
     setContactError('')
     onClose()
@@ -164,19 +175,19 @@ export default function InterestSignupModal({ isOpen, onClose }) {
     setRole(option)
     setContactError('')
     if (option === 'Parent') {
-      setChildren((current) => (current.length > 0 ? current : ['']))
+      setChildren((current) => (current.length > 0 ? current : [emptyChild()]))
       setAge('')
     } else if (option === 'Player') {
-      setChildren([''])
+      setChildren([emptyChild()])
     } else {
       setAge('')
-      setChildren([''])
+      setChildren([emptyChild()])
     }
   }
 
   const addChild = () => {
     if (children.length >= MAX_CHILDREN) return
-    setChildren((current) => [...current, ''])
+    setChildren((current) => [...current, emptyChild()])
   }
 
   const removeChild = (index) => {
@@ -184,8 +195,10 @@ export default function InterestSignupModal({ isOpen, onClose }) {
     setChildren((current) => current.filter((_, i) => i !== index))
   }
 
-  const updateChildAge = (index, value) => {
-    setChildren((current) => current.map((childAge, i) => (i === index ? value : childAge)))
+  const updateChild = (index, field, value) => {
+    setChildren((current) =>
+      current.map((child, i) => (i === index ? { ...child, [field]: value } : child)),
+    )
     setContactError('')
   }
 
@@ -257,6 +270,35 @@ export default function InterestSignupModal({ isOpen, onClose }) {
             </p>
 
             <form onSubmit={handleSubmit} className="mt-6 space-y-4">
+              <fieldset>
+                <legend className="text-sm font-semibold text-ink">
+                  I am a... <span aria-hidden>👋</span>
+                </legend>
+                <div className="mt-2 flex flex-wrap gap-2">
+                  {ROLE_OPTIONS.map(({ label, emoji }) => (
+                    <label
+                      key={label}
+                      className={`cursor-pointer rounded-full border px-3 py-1.5 font-util text-xs font-bold transition-colors ${
+                        role === label
+                          ? 'border-accent bg-accent text-white'
+                          : 'border-border bg-white text-ink hover:border-forest/50'
+                      }`}
+                    >
+                      <input
+                        type="radio"
+                        name="interest-role"
+                        value={label}
+                        checked={role === label}
+                        onChange={() => handleRoleChange(label)}
+                        className="sr-only"
+                      />
+                      <span aria-hidden>{emoji} </span>
+                      {label}
+                    </label>
+                  ))}
+                </div>
+              </fieldset>
+
               <div className="grid gap-4 sm:grid-cols-2">
                 <div className="sm:col-span-1">
                   <label htmlFor="interest-name" className="block text-sm font-semibold text-ink">
@@ -326,41 +368,42 @@ export default function InterestSignupModal({ isOpen, onClose }) {
 
               {role === 'Parent' && (
                 <div>
-                  <div className="flex items-center justify-between gap-3">
-                    <p className="text-sm font-semibold text-ink">
-                      Your children&apos;s ages <span aria-hidden>🎂</span>
-                    </p>
-                    {children.length < MAX_CHILDREN && (
-                      <button
-                        type="button"
-                        onClick={addChild}
-                        className="inline-flex items-center gap-1 rounded-full border border-border px-3 py-1 font-util text-xs font-bold text-forest transition-colors hover:border-forest/50 hover:bg-seafoam"
-                      >
-                        <Plus size={14} aria-hidden />
-                        Add another child
-                      </button>
-                    )}
-                  </div>
-
-                  <div className="mt-3 space-y-3">
-                    {children.map((childAge, index) => (
+                  <div className="space-y-4">
+                    {children.map((child, index) => (
                       <div key={index} className="flex items-end gap-3">
-                        <div className="min-w-0 flex-1">
+                        <div className="min-w-0 flex-[2]">
+                          <label
+                            htmlFor={`interest-child-name-${index}`}
+                            className="block text-sm font-semibold text-ink"
+                          >
+                            Player Name{' '}
+                            <span className="font-normal text-muted">(optional)</span>
+                          </label>
+                          <input
+                            id={`interest-child-name-${index}`}
+                            type="text"
+                            value={child.name}
+                            onChange={(e) => updateChild(index, 'name', e.target.value)}
+                            className={inputClass}
+                            placeholder="Their name"
+                          />
+                        </div>
+                        <div className="w-24 shrink-0">
                           <label
                             htmlFor={`interest-child-age-${index}`}
                             className="block text-sm font-semibold text-ink"
                           >
-                            Child {index + 1} age
+                            Age
                           </label>
                           <input
                             id={`interest-child-age-${index}`}
                             type="number"
                             min={1}
                             max={99}
-                            value={childAge}
-                            onChange={(e) => updateChildAge(index, e.target.value)}
+                            value={child.age}
+                            onChange={(e) => updateChild(index, 'age', e.target.value)}
                             required
-                            className={`${inputClass} max-w-[8rem]`}
+                            className={inputClass}
                             placeholder="12"
                           />
                         </div>
@@ -370,7 +413,7 @@ export default function InterestSignupModal({ isOpen, onClose }) {
                             type="button"
                             onClick={() => removeChild(index)}
                             className="mb-1 rounded-ui p-2 text-muted transition-colors hover:bg-border/50 hover:text-ink"
-                            aria-label={`Remove child ${index + 1}`}
+                            aria-label={`Remove player ${index + 1}`}
                           >
                             <Trash2 size={16} aria-hidden />
                           </button>
@@ -379,8 +422,20 @@ export default function InterestSignupModal({ isOpen, onClose }) {
                     ))}
                   </div>
 
+                  {children.length < MAX_CHILDREN && (
+                    <button
+                      type="button"
+                      onClick={addChild}
+                      className="mt-3 inline-flex items-center gap-1 rounded-full border border-border px-3 py-1 font-util text-xs font-bold text-forest transition-colors hover:border-forest/50 hover:bg-seafoam"
+                    >
+                      <Plus size={14} aria-hidden />
+                      Add another child
+                    </button>
+                  )}
+
                   <p className="mt-2 text-xs text-muted">
-                    Ages help us plan the right age groups. Add up to {MAX_CHILDREN} children.
+                    Names and ages help us plan groups and check players in. Add up to{' '}
+                    {MAX_CHILDREN} children.
                   </p>
                 </div>
               )}
@@ -406,35 +461,6 @@ export default function InterestSignupModal({ isOpen, onClose }) {
                   />
                 </div>
               )}
-
-              <fieldset className="mt-2">
-                <legend className="text-sm font-semibold text-ink">
-                  I am a... <span aria-hidden>👋</span>
-                </legend>
-                <div className="mt-2 flex flex-wrap gap-2">
-                  {ROLE_OPTIONS.map(({ label, emoji }) => (
-                    <label
-                      key={label}
-                      className={`cursor-pointer rounded-full border px-3 py-1.5 font-util text-xs font-bold transition-colors ${
-                        role === label
-                          ? 'border-accent bg-accent text-white'
-                          : 'border-border bg-white text-ink hover:border-forest/50'
-                      }`}
-                    >
-                      <input
-                        type="radio"
-                        name="interest-role"
-                        value={label}
-                        checked={role === label}
-                        onChange={() => handleRoleChange(label)}
-                        className="sr-only"
-                      />
-                      <span aria-hidden>{emoji} </span>
-                      {label}
-                    </label>
-                  ))}
-                </div>
-              </fieldset>
 
               {contactError && (
                 <p className="text-sm font-medium text-red-600" role="alert">

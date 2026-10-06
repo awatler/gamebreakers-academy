@@ -15,7 +15,7 @@ const MERGE = {
 }
 
 function getEnv(name) {
-  return process.env[name]
+  return (process.env[name] || '').trim() || undefined
 }
 
 function splitName(name) {
@@ -41,33 +41,38 @@ function buildChildEmail(parentEmail, childIndex) {
   return `clinic-${shortHash}-${childIndex}@${FALLBACK_DOMAIN}`
 }
 
-function parseChildAges(children, age) {
-  if (Array.isArray(children) && children.length > 0) {
-    return children.map((child) => Number(child?.age))
-  }
+function parseChildren(children) {
+  if (!Array.isArray(children) || children.length === 0) return []
 
-  if (age !== undefined && age !== null && String(age).trim() !== '') {
-    return [Number(age)]
-  }
-
-  return []
+  return children.map((child) => ({
+    name: String(child?.name || '').trim(),
+    age: Number(child?.age),
+  }))
 }
 
-function validateChildAges(ages) {
-  if (ages.length < 1) {
-    return 'Please add at least one child age.'
+function validateChildren(parsedChildren) {
+  if (parsedChildren.length < 1) {
+    return 'Please add at least one child.'
   }
 
-  if (ages.length > MAX_CHILDREN) {
+  if (parsedChildren.length > MAX_CHILDREN) {
     return `You can add up to ${MAX_CHILDREN} children per signup.`
   }
 
-  for (const childAge of ages) {
-    if (!Number.isInteger(childAge) || childAge < 1 || childAge > 99) {
+  for (const child of parsedChildren) {
+    if (!Number.isInteger(child.age) || child.age < 1 || child.age > 99) {
       return 'Please enter a valid age for each child.'
     }
   }
 
+  return null
+}
+
+function validatePlayerAge(age) {
+  const parsed = Number(age)
+  if (!Number.isInteger(parsed) || parsed < 1 || parsed > 99) {
+    return 'Please enter a valid age for the player.'
+  }
   return null
 }
 
@@ -150,13 +155,14 @@ export async function POST(request) {
 
   try {
     if (trimmedRole === 'Parent') {
-      const childAges = parseChildAges(children, age)
-      const ageError = validateChildAges(childAges)
-      if (ageError) {
-        return Response.json({ error: ageError }, { status: 400 })
+      const parsedChildren = parseChildren(children)
+      const childError = validateChildren(parsedChildren)
+      if (childError) {
+        return Response.json({ error: childError }, { status: 400 })
       }
 
-      const childCount = childAges.length
+      const childCount = parsedChildren.length
+      const childAges = parsedChildren.map((child) => child.age)
       const failures = []
 
       const parentHash = getSubscriberHash(trimmedEmail)
@@ -195,23 +201,30 @@ export async function POST(request) {
 
       await applyClinicTag(parentUrl, authHeader)
 
-      for (let index = 0; index < childAges.length; index += 1) {
+      for (let index = 0; index < parsedChildren.length; index += 1) {
+        const child = parsedChildren[index]
         const childIndex = index + 1
         const childEmail = buildChildEmail(trimmedEmail, childIndex)
         const subscriberHash = getSubscriberHash(childEmail)
         const memberUrl = `${baseUrl}/lists/${audienceId}/members/${subscriberHash}`
+        const childName = splitName(child.name)
 
         const mergeFields = {
-          FNAME,
-          LNAME,
           PHONE: trimmedPhone,
           ROLE: 'Player',
-          AGE: String(childAges[index]),
+          AGE: String(child.age),
           [MERGE.PARENT_EMAIL]: trimmedEmail,
           [MERGE.PARENT_NAME]: trimmedName,
           [MERGE.CHILD_INDEX]: childIndex,
           [MERGE.CHILD_COUNT]: childCount,
           [MERGE.SIGNUP_ID]: signupId,
+        }
+
+        // Player Name is optional — only write FNAME/LNAME when provided so a
+        // re-signup without a name does not wipe a previously captured name.
+        if (child.name) {
+          mergeFields.FNAME = childName.FNAME
+          mergeFields.LNAME = childName.LNAME
         }
 
         if (trimmedZip) mergeFields.ZIP = trimmedZip
@@ -271,12 +284,11 @@ export async function POST(request) {
     if (trimmedZip) mergeFields.ZIP = trimmedZip
 
     if (trimmedRole === 'Player') {
-      const childAges = parseChildAges(children, age)
-      const ageError = validateChildAges(childAges)
+      const ageError = validatePlayerAge(age)
       if (ageError) {
         return Response.json({ error: ageError }, { status: 400 })
       }
-      mergeFields.AGE = String(childAges[0])
+      mergeFields.AGE = String(Number(age))
     }
 
     const subscriberHash = getSubscriberHash(trimmedEmail)

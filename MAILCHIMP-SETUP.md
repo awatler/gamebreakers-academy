@@ -23,11 +23,11 @@ When someone clicks **"Let's do it!"** on the site:
 | Email | Yes |
 | Phone | No |
 | Role (Parent / Player / Coach / Community Partner) | Yes |
-| Child ages | Yes, when Role = Parent (1–5 children, ages 7–14) |
-| Age | Yes, when Role = Player (ages 7–14) |
+| Child name + age | Yes, when Role = Parent (1–5 children; ages collected as 1–99) |
+| Age | Yes, when Role = Player |
 | Zip Code | Optional |
 
-**Parent multi-child signups:** creates **one parent contact** at the parent's real email (`ROLE = Parent`) for campaigns, plus **one headcount-only child contact per kid** on `clinic-*` alias emails (`ROLE = Player`). Sibling child records are linked via `PEMAIL`, `CHINDEX`, `CHCOUNT`, and `SIGNUPID`.
+**Parent multi-child signups:** creates **one parent contact** at the parent's real email (`ROLE = Parent`, `FNAME`/`LNAME` = parent name) for campaigns, plus **one child contact per kid** on `clinic-*` alias emails (`ROLE = Player`, `FNAME`/`LNAME` = **child** name, `AGE` = child age). Sibling child records are linked via `PEMAIL`, `PNAME`, `CHINDEX`, `CHCOUNT`, and `SIGNUPID`. No new merge fields are needed for child names.
 
 These map to Mailchimp **merge fields** (custom contact properties).
 
@@ -103,15 +103,15 @@ Each parent signup creates two types of Mailchimp records:
 
 | Record | Email | ROLE | Used for |
 |---|---|---|---|
-| Parent | Parent's real email | `Parent` | Email campaigns, contact info, **CHLDAGES** (e.g. `9, 11, 13`) |
-| Each child | `clinic-{hash}-1@brooklyngamebreakers.com`, etc. | `Player` | Headcount only — do not email |
+| Parent | Parent's real email | `Parent` | Email campaigns, contact info, **CHLDAGES** (e.g. `9, 11, 13`); `FNAME`/`LNAME` = parent |
+| Each child | `clinic-{hash}-1@brooklyngamebreakers.com`, etc. | `Player` | Roster (child name in `FNAME`/`LNAME` + `AGE`) — do not email |
 
-The parent's real email is also stored in **PEMAIL** on each child record so siblings can be grouped.
+The parent's real email is also stored in **PEMAIL** on each child record so siblings can be grouped. **PNAME** stores the parent name. Child names use built-in **FNAME** / **LNAME** on Player rows (no extra merge field).
 
 ### Email campaigns vs. headcount
 
 - **Send campaigns to:** contacts where `ROLE = Parent` (real email addresses), or exclude emails containing `clinic-`
-- **Clinic headcount:** count contacts where `ROLE = Player` + clinic tag (the `clinic-*` alias rows)
+- **Clinic roster / headcount:** count contacts where `ROLE = Player` + clinic tag (the `clinic-*` alias rows); child names appear in `FNAME`/`LNAME` on new signups
 
 ---
 
@@ -255,13 +255,17 @@ Update `InterestSignupModal.jsx` so `handleSubmit`:
   "phone": "555-123-4567",
   "role": "Parent",
   "zip": "11215",
-  "children": [{ "age": "9" }, { "age": "11" }, { "age": "13" }]
+  "children": [
+    { "name": "Maya Doe", "age": "9" },
+    { "name": "Leo Doe", "age": "11" },
+    { "name": "Sam Doe", "age": "13" }
+  ]
 }
 ```
 
-The API creates **one Mailchimp row per child**, each tagged `Flag Football Clinic - Fall 2026`.
+The API creates **one Mailchimp row per child** (with that child's name in `FNAME`/`LNAME`), each tagged `Flag Football Clinic - Fall 2026`.
 
-### Clinic headcount
+### Clinic headcount / roster
 
 Filter your audience (or export CSV) where:
 
@@ -269,7 +273,7 @@ Filter your audience (or export CSV) where:
 - `ROLE` = `Player`
 - `AGE` is between 7 and 14
 
-The row count = registered participants (child `Player` rows only). Use `PEMAIL` and `SIGNUPID` on child rows to group siblings. Parents are stored separately at their real email with `ROLE = Parent`.
+The row count = registered participants (child `Player` rows only). New rows show the child's name in `FNAME`/`LNAME`. Use `PEMAIL` and `SIGNUPID` on child rows to group siblings. Parents are stored separately at their real email with `ROLE = Parent`.
 
 3. On success → show **"You're in!"** (and child count for parents)
 4. On error → show a friendly retry message
@@ -288,7 +292,7 @@ The row count = registered participants (child `Player` rows only). Use `PEMAIL`
 - [ ] `.env.local` filled in
 - [ ] Submit with a real email you control
 - [ ] Contact appears in **Audience → All contacts**
-- [ ] FNAME, PHONE, ROLE, AGE populated correctly
+- [ ] Parent row: FNAME/LNAME = parent; child rows: FNAME/LNAME = child; PHONE, ROLE, AGE, PNAME populated correctly
 
 ### Production
 - [ ] Env vars set in Vercel
@@ -297,12 +301,12 @@ The row count = registered participants (child `Player` rows only). Use `PEMAIL`
 - [ ] Contact appears in Mailchimp
 
 ### Edge cases
-- [ ] Submit as **Player** with Age (7–14)
-- [ ] Submit as **Parent** with 1 child
-- [ ] Submit as **Parent** with 3 children (Gmail subaddressing)
+- [ ] Submit as **Player** with Age
+- [ ] Submit as **Parent** with 1 child (name + age)
+- [ ] Submit as **Parent** with 3 children (name + age each)
 - [ ] Submit **without Zip**
 - [ ] Submit same parent email twice to add/update children (should upsert, not crash)
-- [ ] Reject age 6 or 15
+- [ ] Reject missing child name or invalid age
 
 ### Double opt-in
 - **ON:** contact shows **Pending** until confirmation email clicked

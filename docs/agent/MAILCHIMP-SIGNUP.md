@@ -1,6 +1,6 @@
 # Mailchimp signup — data model & conventions
 
-Last updated: September 2026 — Fall Clinic registrations
+Last updated: October 2026 — Fall Clinic registrations (child names)
 
 ## Current purpose
 
@@ -15,7 +15,7 @@ The form and API register people for the **Fall 2026 flag football clinic**
 | Record | Mailchimp email | ROLE | Purpose |
 |---|---|---|---|
 | Parent | Parent's **real email** | `Parent` | Campaigns, contact info, **CHLDAGES** summary |
-| Each child | `clinic-{hash}-{N}@brooklyngamebreakers.com` | `Player` | Age counts only — **do not email** |
+| Each child | `clinic-{hash}-{N}@brooklyngamebreakers.com` | `Player` | Child name + age — **do not email** |
 
 - `{hash}` = first 8 chars of MD5(parent email)
 - `N` = 1-based child index within signup
@@ -28,16 +28,16 @@ The form and API register people for the **Fall 2026 flag football clinic**
 ## Form behavior (`InterestSignupModal.jsx`)
 
 **Parent role:**
-- Repeatable child age rows (1–5 children)
-- Payload: `{ role: "Parent", children: [{ age: "9" }, ...], name, email, phone, zip }`
+- Repeatable rows with **child name + age** (1–5 children)
+- Payload: `{ role: "Parent", children: [{ name: "Maya Lee", age: "9" }, ...], name, email, phone, zip }`
 
 **Player role:**
-- Single age field, one record at their real email
+- Single age field, one record at their real email (`FNAME`/`LNAME` = their own name)
 
 **Coach / Community Partner:**
 - No age fields
 
-Age validation: integers 1–99 (not restricted to 7–14).
+Age validation: integers 1–99 (not restricted to 7–14). Child/player name is optional; age is required.
 
 On a successful submit the form fires a GA4 `generate_lead` event via
 `src/lib/analytics.js` with `method`, `role`, and `child_count`. Never add names,
@@ -47,13 +47,17 @@ emails, phone numbers, or ages to that payload — Google prohibits PII.
 
 For `role === "Parent"`:
 
-1. Upsert **parent** at real email (`ROLE: Parent`, `CHCOUNT`, `CHLDAGES`, `SIGNUPID`)
+1. Upsert **parent** at real email (`FNAME`/`LNAME` = parent name, `ROLE: Parent`, `CHCOUNT`, `CHLDAGES`, `SIGNUPID`)
 2. Apply Fall Clinic tag to parent
-3. For each child: upsert **child alias** (`ROLE: Player`, `AGE`, `PEMAIL`, `PNAME`, `CHINDEX`, `CHCOUNT`, `SIGNUPID`)
+3. For each child: upsert **child alias** with **child** `FNAME`/`LNAME` (split from child name), `ROLE: Player`, `AGE`, `PEMAIL`, `PNAME` (parent name), `CHINDEX`, `CHCOUNT`, `SIGNUPID`
 4. Apply Fall Clinic tag to each child
 5. Partial failure returns `502` if some children fail after parent succeeds
 
 For other roles: single upsert at submitter email (unchanged).
+
+**No new Mailchimp merge fields are required for child names** — they use built-in
+`FNAME` / `LNAME` on the child/Player rows. Parent name remains on the parent
+row and in `PNAME` on child rows.
 
 ## Mailchimp merge fields
 
@@ -72,6 +76,12 @@ For other roles: single upsert at submitter email (unchanged).
 
 Built-in: `FNAME`, `LNAME`, `PHONE`, `ZIP`.
 
+- Parent rows: `FNAME`/`LNAME` = parent name
+- Child/Player alias rows (going forward): `FNAME`/`LNAME` = **child** name when provided
+  (Player Name is optional; age is required). If name is omitted on a re-signup, existing
+  `FNAME`/`LNAME` on that child row are left unchanged.
+- Older child alias rows may still show the parent's name in `FNAME`/`LNAME` — no backfill
+
 Constants in code: `MERGE` object in `api/subscribe.js`.
 
 ## Campaigns vs counts
@@ -86,7 +96,8 @@ period between clinics; that tag is no longer applied to new signups
 **July clinic attendees:** rows tagged `Flag Football Clinic - July 2026` (historical —
 that tag is no longer applied to new signups)
 
-**Age counts:** count rows where `ROLE = Player` (child alias rows only)
+**Age counts / roster:** count rows where `ROLE = Player` (child alias rows). New
+signups show the child's name in `FNAME`/`LNAME`.
 
 **View all ages for a family:** parent row `CHLDAGES`, or filter child rows by matching `PEMAIL` / `SIGNUPID`
 
