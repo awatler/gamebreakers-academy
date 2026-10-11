@@ -95,6 +95,72 @@ async function upsertMember({ memberUrl, authHeader, payload }) {
   return { ok: true }
 }
 
+function isComplianceBlock(detail = '') {
+  const text = String(detail).toLowerCase()
+  return (
+    text.includes('compliance state') ||
+    text.includes('cannot be subscribed') ||
+    text.includes('permanently deleted') ||
+    text.includes('cleaned')
+  )
+}
+
+async function getMemberStatus(memberUrl, authHeader) {
+  try {
+    const res = await fetch(memberUrl, {
+      method: 'GET',
+      headers: { Authorization: authHeader },
+    })
+    if (!res.ok) return null
+    const body = await res.json().catch(() => ({}))
+    return body.status || null
+  } catch {
+    return null
+  }
+}
+
+// Child aliases are fake emails. Mailchimp often marks them cleaned/bounced after any
+// send attempt, which blocks PUT with status:"subscribed". New aliases still use
+// status_if_new; existing ones keep their current status and only get field/tag updates.
+async function upsertChildAlias({ memberUrl, authHeader, email, mergeFields }) {
+  const basePayload = {
+    email_address: email,
+    status_if_new: 'subscribed',
+    merge_fields: mergeFields,
+  }
+
+  const firstTry = await upsertMember({
+    memberUrl,
+    authHeader,
+    payload: basePayload,
+  })
+
+  if (firstTry.ok) return firstTry
+
+  if (!isComplianceBlock(firstTry.detail)) return firstTry
+
+  const existingStatus = await getMemberStatus(memberUrl, authHeader)
+  if (!existingStatus || existingStatus === 'subscribed') {
+    return firstTry
+  }
+
+  console.warn(
+    'Retrying clinic alias upsert with existing status:',
+    email,
+    existingStatus,
+    firstTry.detail,
+  )
+
+  return upsertMember({
+    memberUrl,
+    authHeader,
+    payload: {
+      ...basePayload,
+      status: existingStatus,
+    },
+  })
+}
+
 async function applyClinicTag(memberUrl, authHeader) {
   try {
     const tagRes = await fetch(`${memberUrl}/tags`, {
@@ -229,20 +295,20 @@ export async function POST(request) {
 
         if (trimmedZip) mergeFields.ZIP = trimmedZip
 
-        const result = await upsertMember({
+        const result = await upsertChildAlias({
           memberUrl,
           authHeader,
-          payload: {
-            email_address: childEmail,
-            status_if_new: 'subscribed',
-            status: 'subscribed',
-            merge_fields: mergeFields,
-          },
+          email: childEmail,
+          mergeFields,
         })
 
         if (!result.ok) {
           console.error('Mailchimp member error:', result.status, result.errBody)
-          failures.push({ childIndex, detail: result.detail })
+          failures.push({
+            childIndex,
+            detail:
+              'We could not update this player record. Please contact info@brooklyngamebreakers.com and we will finish your signup.',
+          })
           continue
         }
 

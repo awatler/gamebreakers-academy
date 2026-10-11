@@ -113,6 +113,12 @@ Debug: `GET /api/env-check` on production (keys present, not values).
 
 Early multi-child tests created `clinic-*` rows **without** a parent row at the real email. Safe to archive/delete those test contacts manually. New signups follow parent + children model.
 
+**Cleaned clinic aliases:** `clinic-*` addresses are not real mailboxes. If Mailchimp
+ever emailed them they bounce and become `cleaned` / compliance-blocked. Returning
+parents then hit errors if we force `status: "subscribed"` on those child rows.
+`upsertChildAlias` in `api/subscribe.js` updates merge fields / tags while keeping
+the existing status — do not reintroduce a forced subscribe on child aliases.
+
 ## Changing this system
 
 Before editing merge tags or email strategy:
