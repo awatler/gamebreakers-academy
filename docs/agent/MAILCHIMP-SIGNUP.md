@@ -106,8 +106,17 @@ signups show the child's name in `FNAME`/`LNAME`.
 - `MAILCHIMP_API_KEY`
 - `MAILCHIMP_SERVER_PREFIX` (e.g. `us21`)
 - `MAILCHIMP_AUDIENCE_ID`
+- `RESEND_API_KEY`, `ALERT_EMAIL_TO`, `ALERT_EMAIL_FROM` (optional) — failure alerts
 
 Debug: `GET /api/env-check` on production (keys present, not values).
+
+## Failure alerts
+
+`notifyFailure` in `api/subscribe.js` emails the team on every non-success exit —
+Mailchimp rejections, partial child failures, tag failures, and unhandled errors —
+so a blocked parent can be followed up with manually. Validation errors are
+deliberately excluded. Any new early-return failure path should call it. See
+`docs/ALERTS.md`.
 
 ## Known legacy data
 
