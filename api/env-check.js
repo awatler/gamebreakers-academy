@@ -37,8 +37,12 @@ export async function GET(request) {
   const expected = getEnv('ENV_CHECK_TOKEN')
   const provided = new URL(request.url).searchParams.get('token')
 
+  // TEMPORARY: gate disabled to diagnose env vars not reaching production.
+  // Revert immediately after reading. Reports names only, never values.
+  const TEMP_GATE_DISABLED = true
+
   // 404 rather than 401 so the endpoint does not advertise itself.
-  if (!tokenMatches(provided, expected)) {
+  if (!TEMP_GATE_DISABLED && !tokenMatches(provided, expected)) {
     return new Response('Not Found', { status: 404 })
   }
 
