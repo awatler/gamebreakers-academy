@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom'
 
-const LAST_UPDATED = 'September 25, 2026'
+const LAST_UPDATED = 'October 14, 2026'
 const CONTACT_EMAIL = 'info@brooklyngamebreakers.com'
 
 const linkClass = 'font-semibold text-forest transition-colors hover:text-green-deep'
@@ -66,8 +66,9 @@ export default function Privacy() {
           <li>To meet legal, permitting, and insurance obligations for our programs</li>
         </ul>
         <p>
-          We do not sell, rent, or trade your personal information, and we do not use it for
-          advertising targeted at you or your children.
+          We do not sell, rent, or trade your personal information. We may use limited signup
+          information (in hashed form) with Meta to measure whether our ads led to clinic
+          registrations. We do not use children&apos;s names or ages for advertising.
         </p>
       </Section>
 
@@ -99,6 +100,22 @@ export default function Privacy() {
           .
         </p>
         <p>
+          We also use the Meta Pixel and Meta Conversions API to understand whether ads on Meta
+          (including Facebook and Instagram) lead people to visit our site and sign up for clinics.
+          When you submit the signup form, we may send a registration event to Meta with hashed
+          contact details (such as email or phone) so Meta can match the signup to an ad click.
+          Meta&apos;s policies are at{' '}
+          <a
+            href="https://www.facebook.com/privacy/policy/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className={linkClass}
+          >
+            Meta&apos;s Privacy Policy
+          </a>
+          .
+        </p>
+        <p>
           If you would rather not be counted, you can install the{' '}
           <a
             href="https://tools.google.com/dlpage/gaoptout"
@@ -108,8 +125,8 @@ export default function Privacy() {
           >
             Google Analytics opt-out browser add-on
           </a>
-          , block cookies in your browser settings, or use your browser&apos;s private browsing
-          mode. Our site works fine either way.
+          , use Meta&apos;s ad settings / opt-outs, block cookies in your browser settings, or use
+          your browser&apos;s private browsing mode. Our site works fine either way.
         </p>
       </Section>
 
@@ -126,6 +143,10 @@ export default function Privacy() {
           <li>
             <span className="font-semibold text-ink">Google Analytics</span> provides aggregate site
             traffic reporting
+          </li>
+          <li>
+            <span className="font-semibold text-ink">Meta</span> (Facebook / Instagram) receives page
+            view and signup events so we can measure ad performance
           </li>
           <li>
             <span className="font-semibold text-ink">Vercel</span> hosts this website

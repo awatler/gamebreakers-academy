@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { X, Plus, Trash2 } from 'lucide-react'
 
-import { trackEvent } from '../lib/analytics'
+import { getMetaClickIds, trackEvent, trackMetaLead } from '../lib/analytics'
 
 const ROLE_OPTIONS = [
   { label: 'Parent', emoji: '👨‍👩‍👧' },
@@ -109,6 +109,8 @@ export default function InterestSignupModal({ isOpen, onClose }) {
         phone: trimmedPhone,
         role,
         zip: zip.trim(),
+        ...getMetaClickIds(),
+        eventSourceUrl: typeof window !== 'undefined' ? window.location.href : undefined,
       }
 
       if (role === 'Parent') {
@@ -154,6 +156,10 @@ export default function InterestSignupModal({ isOpen, onClose }) {
         role,
         child_count: role === 'Parent' ? payload.children.length : 0,
       })
+
+      if (data.metaEventId) {
+        trackMetaLead(data.metaEventId)
+      }
     } catch {
       setContactError('Something went wrong. Please try again.')
     } finally {

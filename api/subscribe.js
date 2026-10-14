@@ -1,5 +1,7 @@
 import crypto from 'crypto'
 
+import { sendMetaLead } from './meta-capi.js'
+
 const CLINIC_TAG = 'Flag Football Clinic - Fall 2026'
 const MAX_CHILDREN = 5
 const FALLBACK_DOMAIN = 'brooklyngamebreakers.com'
@@ -16,6 +18,66 @@ const MERGE = {
 
 function getEnv(name) {
   return (process.env[name] || '').trim() || undefined
+}
+
+// Most signup failures are handled responses, not crashes — Mailchimp rejects the
+// address, the parent reads an error message, and we never hear about it. Email the
+// team on every failed exit so a blocked signup can be finished by hand.
+// Alerting must never be able to break a signup, so this swallows its own errors.
+async function notifyFailure({ reason, status, detail, signupId, submission }) {
+  const apiKey = getEnv('RESEND_API_KEY')
+  const to = getEnv('ALERT_EMAIL_TO')
+
+  if (!apiKey || !to) return
+
+  const lines = [
+    `Reason:    ${reason}`,
+    `Status:    ${status}`,
+    `When:      ${new Date().toISOString()}`,
+    `Env:       ${getEnv('VERCEL_ENV') || 'local'}`,
+  ]
+
+  if (detail) lines.push(`Detail:    ${detail}`)
+  if (signupId) lines.push(`Signup ID: ${signupId}`)
+
+  if (submission) {
+    lines.push('', 'Submission — follow up with this person directly:')
+    lines.push(`  Role:     ${submission.role || '(none)'}`)
+    lines.push(`  Name:     ${submission.name || '(none)'}`)
+    lines.push(`  Email:    ${submission.email || '(none)'}`)
+    lines.push(`  Phone:    ${submission.phone || '(none)'}`)
+    lines.push(`  Zip:      ${submission.zip || '(none)'}`)
+
+    if (submission.children?.length) {
+      const children = submission.children
+        .map((child) => `${child.name || '(no name)'} (age ${child.age})`)
+        .join(', ')
+      lines.push(`  Children: ${children}`)
+    }
+  }
+
+  try {
+    const res = await fetch('https://api.resend.com/emails', {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        from: getEnv('ALERT_EMAIL_FROM') || 'Gamebreakers Alerts <onboarding@resend.dev>',
+        to: to.split(',').map((address) => address.trim()).filter(Boolean),
+        subject: `[BGA signup alert] ${reason}`,
+        text: lines.join('\n'),
+      }),
+      signal: AbortSignal.timeout(5000),
+    })
+
+    if (!res.ok) {
+      console.error('Alert email failed:', res.status, await res.text().catch(() => ''))
+    }
+  } catch (alertErr) {
+    console.error('Alert email request failed:', alertErr)
+  }
 }
 
 function splitName(name) {
@@ -177,9 +239,13 @@ async function applyClinicTag(memberUrl, authHeader) {
     if (!tagRes.ok) {
       const tagBody = await tagRes.json().catch(() => ({}))
       console.error('Mailchimp tag error:', tagRes.status, tagBody)
+      return false
     }
+
+    return true
   } catch (tagErr) {
     console.error('Mailchimp tag request failed:', tagErr)
+    return false
   }
 }
 
@@ -189,6 +255,7 @@ export async function POST(request) {
   const audienceId = getEnv('MAILCHIMP_AUDIENCE_ID')
 
   if (!apiKey || !serverPrefix || !audienceId) {
+    await notifyFailure({ reason: 'Mailchimp env vars are missing', status: 500 })
     return Response.json({ error: 'Mailchimp is not configured.' }, { status: 500 })
   }
 
@@ -199,12 +266,13 @@ export async function POST(request) {
     return Response.json({ error: 'Invalid request body.' }, { status: 400 })
   }
 
-  const { name, email, phone, role, age, zip, children } = body || {}
+  const { name, email, phone, role, age, zip, children, fbp, fbc, eventSourceUrl } = body || {}
   const trimmedRole = (role || '').trim()
   const trimmedEmail = (email || '').trim()
   const trimmedName = (name || '').trim()
   const trimmedPhone = (phone || '').trim()
   const trimmedZip = (zip || '').trim()
+  const metaEventId = crypto.randomUUID()
 
   if (!trimmedEmail) {
     return Response.json({ error: 'Email is required to sign up.' }, { status: 400 })
@@ -218,6 +286,27 @@ export async function POST(request) {
   const baseUrl = `https://${serverPrefix}.api.mailchimp.com/3.0`
   const authHeader = `Basic ${Buffer.from(`anystring:${apiKey}`).toString('base64')}`
   const signupId = crypto.randomUUID()
+  const submission = {
+    role: trimmedRole,
+    name: trimmedName,
+    email: trimmedEmail,
+    phone: trimmedPhone,
+    zip: trimmedZip,
+  }
+
+  const sendLead = () =>
+    sendMetaLead({
+      request,
+      eventId: metaEventId,
+      email: trimmedEmail,
+      phone: trimmedPhone,
+      firstName: FNAME,
+      lastName: LNAME,
+      zip: trimmedZip,
+      fbp,
+      fbc,
+      eventSourceUrl,
+    })
 
   try {
     if (trimmedRole === 'Parent') {
@@ -230,6 +319,11 @@ export async function POST(request) {
       const childCount = parsedChildren.length
       const childAges = parsedChildren.map((child) => child.age)
       const failures = []
+      // Raw Mailchimp text for the alert email — `failures` goes back to the browser.
+      const childErrors = []
+      const untaggedChildren = []
+
+      submission.children = parsedChildren
 
       const parentHash = getSubscriberHash(trimmedEmail)
       const parentUrl = `${baseUrl}/lists/${audienceId}/members/${parentHash}`
@@ -259,13 +353,20 @@ export async function POST(request) {
 
       if (!parentResult.ok) {
         console.error('Mailchimp parent error:', parentResult.status, parentResult.errBody)
+        await notifyFailure({
+          reason: 'Mailchimp rejected the parent record',
+          status: parentResult.status,
+          detail: parentResult.detail,
+          signupId,
+          submission,
+        })
         return Response.json(
           { error: parentResult.detail || 'Could not complete signup. Please try again.' },
           { status: parentResult.status >= 500 ? 502 : 400 },
         )
       }
 
-      await applyClinicTag(parentUrl, authHeader)
+      const parentTagged = await applyClinicTag(parentUrl, authHeader)
 
       for (let index = 0; index < parsedChildren.length; index += 1) {
         const child = parsedChildren[index]
@@ -304,6 +405,7 @@ export async function POST(request) {
 
         if (!result.ok) {
           console.error('Mailchimp member error:', result.status, result.errBody)
+          childErrors.push(`child ${childIndex}: ${result.status} ${result.detail}`)
           failures.push({
             childIndex,
             detail:
@@ -312,12 +414,20 @@ export async function POST(request) {
           continue
         }
 
-        await applyClinicTag(memberUrl, authHeader)
+        const childTagged = await applyClinicTag(memberUrl, authHeader)
+        if (!childTagged) untaggedChildren.push(childIndex)
       }
 
       const registeredCount = childCount - failures.length
 
       if (registeredCount === 0) {
+        await notifyFailure({
+          reason: `All ${childCount} player records failed`,
+          status: 400,
+          detail: childErrors.join(' | '),
+          signupId,
+          submission,
+        })
         return Response.json(
           { error: failures[0]?.detail || 'Could not complete signup. Please try again.' },
           { status: 400 },
@@ -326,6 +436,13 @@ export async function POST(request) {
 
       if (failures.length > 0) {
         console.error('Partial signup failures:', failures)
+        await notifyFailure({
+          reason: `${failures.length} of ${childCount} player records failed`,
+          status: 502,
+          detail: childErrors.join(' | '),
+          signupId,
+          submission,
+        })
         return Response.json(
           {
             error: `${registeredCount} of ${childCount} children added. Please contact info@brooklyngamebreakers.com to finish joining the list.`,
@@ -337,7 +454,22 @@ export async function POST(request) {
         )
       }
 
-      return Response.json({ success: true, registeredCount, childCount })
+      // Untagged rows save fine but never show up in the clinic segment, so the
+      // family silently goes missing from the roster.
+      if (!parentTagged || untaggedChildren.length > 0) {
+        await notifyFailure({
+          reason: 'Signup saved but the clinic tag failed',
+          status: 200,
+          detail: `parent tagged: ${parentTagged}; untagged children: ${
+            untaggedChildren.join(', ') || 'none'
+          }`,
+          signupId,
+          submission,
+        })
+      }
+
+      await sendLead()
+      return Response.json({ success: true, registeredCount, childCount, metaEventId })
     }
 
     const mergeFields = {
@@ -373,17 +505,41 @@ export async function POST(request) {
 
     if (!result.ok) {
       console.error('Mailchimp member error:', result.status, result.errBody)
+      await notifyFailure({
+        reason: `Mailchimp rejected the ${trimmedRole || 'member'} record`,
+        status: result.status,
+        detail: result.detail,
+        signupId,
+        submission,
+      })
       return Response.json(
         { error: result.detail },
         { status: result.status >= 500 ? 502 : 400 },
       )
     }
 
-    await applyClinicTag(memberUrl, authHeader)
+    const tagged = await applyClinicTag(memberUrl, authHeader)
 
-    return Response.json({ success: true, registeredCount: 1, childCount: 1 })
+    if (!tagged) {
+      await notifyFailure({
+        reason: 'Signup saved but the clinic tag failed',
+        status: 200,
+        signupId,
+        submission,
+      })
+    }
+
+    await sendLead()
+    return Response.json({ success: true, registeredCount: 1, childCount: 1, metaEventId })
   } catch (err) {
     console.error('Subscribe error:', err)
+    await notifyFailure({
+      reason: 'Unhandled error during signup',
+      status: 500,
+      detail: err?.stack || err?.message || String(err),
+      signupId,
+      submission,
+    })
     return Response.json({ error: 'Something went wrong. Please try again.' }, { status: 500 })
   }
 }

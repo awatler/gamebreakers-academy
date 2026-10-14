@@ -39,7 +39,12 @@ details. New Mailchimp signups get **only** the Fall Clinic tag.
 - Custom events go through `src/lib/analytics.js`:
   - `generate_lead` on successful signup (`method`, `role`, `child_count`)
   - `select_content` on opening a gallery photo (`content_type: clinic_photo`, `item_id`: slug)
-- **Never** send names, emails, phone numbers, or ages — Google prohibits PII
+- **Never** send names, emails, phone numbers, or ages to Google — Google prohibits PII
+- Meta Pixel `3725240204290982` in `index.html` (`PageView`)
+- Meta CAPI **Lead** on successful signup via `api/meta-capi.js` (called from `api/subscribe.js`)
+  - Env: `META_PIXEL_ID`, `META_CAPI_ACCESS_TOKEN` (optional `META_TEST_EVENT_CODE`)
+  - Browser `fbq('track','Lead')` uses the same `metaEventId` for dedupe
+  - Hashed email/phone/name/zip only — never child ages
 
 ## Clinic gallery
 
