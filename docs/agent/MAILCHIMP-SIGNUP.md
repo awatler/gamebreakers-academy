@@ -108,7 +108,8 @@ signups show the child's name in `FNAME`/`LNAME`.
 - `MAILCHIMP_AUDIENCE_ID`
 - `RESEND_API_KEY`, `ALERT_EMAIL_TO`, `ALERT_EMAIL_FROM` (optional) — failure alerts
 
-Debug: `GET /api/env-check` on production (keys present, not values).
+Debug: `GET /api/env-check?token=$ENV_CHECK_TOKEN` on production (names and
+presence only, never values). 404s unless `ENV_CHECK_TOKEN` is set and matches.
 
 ## Failure alerts
 

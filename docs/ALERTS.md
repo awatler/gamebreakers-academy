@@ -40,6 +40,12 @@ Resend's free tier covers 3,000 emails/month, far above what this site generates
 4. Redeploy — environment variables are only picked up by a new deployment.
 5. Filter on the `[BGA signup alert]` subject prefix in your mail client.
 
+## Checking what is configured in production
+
+`GET /api/env-check?token=$ENV_CHECK_TOKEN` reports which variables reached the
+running deployment. It returns presence only — never values — and 404s without the
+token, so set `ENV_CHECK_TOKEN` in Vercel alongside the others.
+
 ## Testing it
 
 Submit a real signup using an address that Mailchimp has marked unsubscribed or
