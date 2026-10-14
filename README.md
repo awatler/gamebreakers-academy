@@ -46,6 +46,25 @@ gamebreakers-academy/
 └── vite.config.js
 ```
 
+## Monitoring & alerts
+
+Failed clinic signups email the team within seconds so a blocked parent can be
+followed up with by hand — full setup and triggers in [`docs/ALERTS.md`](docs/ALERTS.md).
+
+Two things to know before touching this:
+
+- **Parents never see raw Mailchimp errors.** Its text ("in a compliance state due
+  to unsubscribe, bounce, or compliance review") is meaningless to them and reads
+  like their fault. `api/subscribe.js` returns friendly copy pointing at
+  `info@brooklyngamebreakers.com`; the raw detail goes to the alert email instead.
+- **Environment variables belong to the Vercel project that owns
+  `brooklyngamebreakers.com`.** Confirm via Settings → Domains before adding any.
+  Variables set on the wrong project deploy fine and silently do nothing.
+
+Check what actually reached production with
+`GET /api/env-check?token=$ENV_CHECK_TOKEN` — presence only, never values, and
+404s without the token.
+
 ## Run Locally
 
 ```bash

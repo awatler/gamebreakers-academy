@@ -20,6 +20,28 @@ const CLINIC_DETAILS = [
 
 const MAX_CHILDREN = 5
 
+const CONTACT_EMAIL = 'info@brooklyngamebreakers.com'
+
+const GENERIC_FAILURE = `Sorry, we couldn't complete your signup. Please email ${CONTACT_EMAIL} and we'll get you registered.`
+
+// Error copy from the API points people at the inbox, so make the address
+// tappable rather than leaving it as text a parent has to retype on a phone.
+function ErrorText({ message }) {
+  if (!message.includes(CONTACT_EMAIL)) return message
+
+  const [before, after] = message.split(CONTACT_EMAIL)
+
+  return (
+    <>
+      {before}
+      <a href={`mailto:${CONTACT_EMAIL}`} className="font-semibold underline underline-offset-2">
+        {CONTACT_EMAIL}
+      </a>
+      {after}
+    </>
+  )
+}
+
 const inputClass =
   'mt-1 w-full rounded-ui border border-border bg-white px-3 py-2.5 text-ink placeholder-muted/60 focus:border-forest focus:outline-none focus:ring-1 focus:ring-forest'
 
@@ -143,7 +165,7 @@ export default function InterestSignupModal({ isOpen, onClose }) {
           data.error ||
             (res.status === 404
               ? 'Signup is unavailable in local preview. Restart the dev server or test on brooklyngamebreakers.com.'
-              : 'Something went wrong. Please try again.'),
+              : GENERIC_FAILURE),
         )
         return
       }
@@ -161,7 +183,7 @@ export default function InterestSignupModal({ isOpen, onClose }) {
         trackMetaLead(data.metaEventId)
       }
     } catch {
-      setContactError('Something went wrong. Please try again.')
+      setContactError(GENERIC_FAILURE)
     } finally {
       setIsSubmitting(false)
     }
@@ -469,9 +491,9 @@ export default function InterestSignupModal({ isOpen, onClose }) {
               )}
 
               {contactError && (
-                <p className="text-sm font-medium text-red-600" role="alert">
-                  {contactError}
-                </p>
+              <p className="text-sm font-medium text-red-600" role="alert">
+                <ErrorText message={contactError} />
+              </p>
               )}
 
               <button

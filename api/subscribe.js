@@ -5,6 +5,24 @@ import { sendMetaLead } from './meta-capi.js'
 const CLINIC_TAG = 'Flag Football Clinic - Fall 2026'
 const MAX_CHILDREN = 5
 const FALLBACK_DOMAIN = 'brooklyngamebreakers.com'
+const CONTACT_EMAIL = 'info@brooklyngamebreakers.com'
+
+// Mailchimp's own error text ("in a compliance state due to unsubscribe, bounce,
+// or compliance review") is meaningless to a parent and reads like a fault of
+// theirs. Send them somewhere useful instead; the raw detail goes to the alert
+// email, where it is actually actionable.
+const GENERIC_FAILURE = `Sorry, we couldn't complete your signup. Please email ${CONTACT_EMAIL} and we'll get you registered.`
+const EMAIL_REJECTED_FAILURE = `That email address was rejected. Please double-check it, or email ${CONTACT_EMAIL} and we'll sign you up.`
+
+function userFacingError(detail) {
+  // Narrow on purpose: only redirect to the address field when Mailchimp is
+  // clearly complaining about the address itself.
+  if (String(detail || '').toLowerCase().includes('valid email')) {
+    return EMAIL_REJECTED_FAILURE
+  }
+
+  return GENERIC_FAILURE
+}
 
 // Mailchimp merge tags must be <= 10 characters.
 const MERGE = {
@@ -256,7 +274,7 @@ export async function POST(request) {
 
   if (!apiKey || !serverPrefix || !audienceId) {
     await notifyFailure({ reason: 'Mailchimp env vars are missing', status: 500 })
-    return Response.json({ error: 'Mailchimp is not configured.' }, { status: 500 })
+    return Response.json({ error: GENERIC_FAILURE }, { status: 500 })
   }
 
   let body
@@ -361,7 +379,7 @@ export async function POST(request) {
           submission,
         })
         return Response.json(
-          { error: parentResult.detail || 'Could not complete signup. Please try again.' },
+          { error: userFacingError(parentResult.detail) },
           { status: parentResult.status >= 500 ? 502 : 400 },
         )
       }
@@ -408,8 +426,7 @@ export async function POST(request) {
           childErrors.push(`child ${childIndex}: ${result.status} ${result.detail}`)
           failures.push({
             childIndex,
-            detail:
-              'We could not update this player record. Please contact info@brooklyngamebreakers.com and we will finish your signup.',
+            detail: `We could not save this player. Please email ${CONTACT_EMAIL} and we'll finish your signup.`,
           })
           continue
         }
@@ -428,10 +445,7 @@ export async function POST(request) {
           signupId,
           submission,
         })
-        return Response.json(
-          { error: failures[0]?.detail || 'Could not complete signup. Please try again.' },
-          { status: 400 },
-        )
+        return Response.json({ error: GENERIC_FAILURE }, { status: 400 })
       }
 
       if (failures.length > 0) {
@@ -445,7 +459,7 @@ export async function POST(request) {
         })
         return Response.json(
           {
-            error: `${registeredCount} of ${childCount} children added. Please contact info@brooklyngamebreakers.com to finish joining the list.`,
+            error: `We registered ${registeredCount} of ${childCount} children. Please email ${CONTACT_EMAIL} and we'll add the rest.`,
             registeredCount,
             childCount,
             failures,
@@ -513,7 +527,7 @@ export async function POST(request) {
         submission,
       })
       return Response.json(
-        { error: result.detail },
+        { error: userFacingError(result.detail) },
         { status: result.status >= 500 ? 502 : 400 },
       )
     }
@@ -540,6 +554,6 @@ export async function POST(request) {
       signupId,
       submission,
     })
-    return Response.json({ error: 'Something went wrong. Please try again.' }, { status: 500 })
+    return Response.json({ error: GENERIC_FAILURE }, { status: 500 })
   }
 }

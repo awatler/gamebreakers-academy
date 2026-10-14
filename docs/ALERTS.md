@@ -24,6 +24,16 @@ are the submitter's own typos and would bury the real failures.
 Each email includes the role, name, email, phone, zip, and child names/ages, plus
 the `SIGNUPID`, so the signup can be completed manually in Mailchimp.
 
+The alert is also the **only** place Mailchimp's raw error text appears — parents
+get friendly copy directing them to `info@brooklyngamebreakers.com` instead.
+
+## Which Vercel project
+
+This repo has been connected to more than one Vercel project. Variables added to
+the wrong one deploy without error and silently do nothing — alerts just never
+send. Before adding variables, open the project's **Settings → Domains** and
+confirm `brooklyngamebreakers.com` is listed.
+
 ## Setup (free)
 
 Resend's free tier covers 3,000 emails/month, far above what this site generates.

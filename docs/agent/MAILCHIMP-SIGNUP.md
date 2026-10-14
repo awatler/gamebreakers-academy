@@ -119,6 +119,11 @@ so a blocked parent can be followed up with manually. Validation errors are
 deliberately excluded. Any new early-return failure path should call it. See
 `docs/ALERTS.md`.
 
+**Never return Mailchimp's `detail` to the browser.** Use `userFacingError()` /
+`GENERIC_FAILURE`, which point parents at `info@brooklyngamebreakers.com`. The raw
+detail belongs in the alert email, where it is actionable. Our own validation
+messages ("Please enter a valid age") are already user-facing and stay as they are.
+
 ## Known legacy data
 
 Early multi-child tests created `clinic-*` rows **without** a parent row at the real email. Safe to archive/delete those test contacts manually. New signups follow parent + children model.
