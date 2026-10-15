@@ -15,7 +15,7 @@ const CLINIC_DETAILS = [
   { emoji: '📅', label: 'Date', value: 'Saturday, October 24th · 3PM–6PM' },
   { emoji: '📍', label: 'Location', value: 'Prospect Park Parade Grounds, Field #5' },
   { emoji: '🆓', label: 'Price', value: 'Free! (but donations are welcome)' },
-  { emoji: '🏆', label: 'Ages', value: '7-14' },
+  { emoji: '🏆', label: 'Ages', value: '7-17' },
 ]
 
 const MAX_CHILDREN = 5
