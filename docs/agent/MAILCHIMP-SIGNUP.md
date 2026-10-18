@@ -84,6 +84,22 @@ Built-in: `FNAME`, `LNAME`, `PHONE`, `ZIP`.
 
 Constants in code: `MERGE` object in `api/subscribe.js`.
 
+## Typed fields — PHONE and ZIP
+
+`PHONE` is a Mailchimp **phone** field and `ZIP` is a **number** field, both fed by
+free-text inputs. They are the only merge fields a parent can make invalid, and an
+invalid one used to fail the entire signup (Oct 2026: iOS autofill supplied the
+ZIP+4 `11226-5878`, which blocked a family's registration outright).
+
+`normalizeZip` keeps the first 5 digits; `normalizePhone` keeps 10- or 11-digit
+numbers. Anything else is omitted rather than sent. If Mailchimp rejects a merge
+field anyway, `upsertMemberWithFallback` retries once without
+`OPTIONAL_MERGE_FIELDS` and alerts — **the registration always wins over an
+optional field.** Do not reintroduce a path where one can block a signup.
+
+`ZIP` being a number field also strips leading zeros (`07302` → `7302`); switching
+it to text in the Mailchimp dashboard would fix that.
+
 ## Campaigns vs counts
 
 **Email campaigns:** segment `ROLE = Parent` OR exclude `Email Address` contains `clinic-`

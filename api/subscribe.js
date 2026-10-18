@@ -98,6 +98,38 @@ async function notifyFailure({ reason, status, detail, signupId, submission }) {
   }
 }
 
+// PHONE and ZIP are typed fields in Mailchimp (phone / number) fed by free-text
+// inputs, so they are the only merge fields a parent can make invalid. Both are
+// optional extras — never worth failing a registration over.
+const OPTIONAL_MERGE_FIELDS = ['PHONE', 'ZIP']
+
+// iOS autofill supplies ZIP+4 ("11226-5878"), which a number field rejects.
+function normalizeZip(zip) {
+  const digits = String(zip || '').replace(/\D/g, '')
+  return digits.length >= 5 ? digits.slice(0, 5) : undefined
+}
+
+function normalizePhone(phone) {
+  const digits = String(phone || '').replace(/\D/g, '')
+  if (digits.length === 10) return digits
+  if (digits.length === 11 && digits.startsWith('1')) return digits
+  return undefined
+}
+
+// The signup succeeded but we threw data away to get it through, so it is worth
+// knowing about — just not worth failing over.
+async function notifyDroppedFields({ droppedFields, signupId, submission }) {
+  if (droppedFields.size === 0) return
+
+  await notifyFailure({
+    reason: 'Signup saved after dropping invalid fields',
+    status: 200,
+    detail: `Mailchimp rejected: ${[...droppedFields].join(', ')}`,
+    signupId,
+    submission,
+  })
+}
+
 function splitName(name) {
   const trimmed = (name || '').trim()
   if (!trimmed) return { FNAME: '', LNAME: '' }
@@ -169,10 +201,56 @@ async function upsertMember({ memberUrl, authHeader, payload }) {
   if (!memberRes.ok) {
     const errBody = await memberRes.json().catch(() => ({}))
     const detail = errBody.detail || errBody.title || 'Could not add you to the list.'
-    return { ok: false, detail, status: memberRes.status, errBody }
+    const errors = Array.isArray(errBody.errors) ? errBody.errors : []
+    return { ok: false, detail, status: memberRes.status, errBody, errors }
   }
 
-  return { ok: true }
+  return { ok: true, errors: [] }
+}
+
+// Mailchimp's `detail` only ever says "Your merge fields were invalid." The field
+// that actually failed is in `errors`, so carry it into the alert email.
+function failureDetail(result) {
+  const fields = (result.errors || [])
+    .map((error) => `${error.field}: ${error.message}`)
+    .join('; ')
+
+  return fields ? `${result.detail} (${fields})` : result.detail
+}
+
+function isMergeFieldError(detail) {
+  return String(detail || '').toLowerCase().includes('merge field')
+}
+
+// Retry once without the offending optional fields rather than losing the signup.
+async function upsertMemberWithFallback({ memberUrl, authHeader, payload }) {
+  const first = await upsertMember({ memberUrl, authHeader, payload })
+
+  if (first.ok || !isMergeFieldError(first.detail)) {
+    return { ...first, dropped: [] }
+  }
+
+  const mergeFields = { ...(payload.merge_fields || {}) }
+  const rejected = first.errors
+    .map((error) => error.field)
+    .filter((field) => OPTIONAL_MERGE_FIELDS.includes(field))
+
+  // Mailchimp does not always name the field; fall back to dropping all extras.
+  const dropped = (rejected.length > 0 ? rejected : OPTIONAL_MERGE_FIELDS).filter(
+    (field) => field in mergeFields,
+  )
+
+  if (dropped.length === 0) return { ...first, dropped: [] }
+
+  for (const field of dropped) delete mergeFields[field]
+
+  const retry = await upsertMember({
+    memberUrl,
+    authHeader,
+    payload: { ...payload, merge_fields: mergeFields },
+  })
+
+  return { ...retry, dropped: retry.ok ? dropped : [] }
 }
 
 function isComplianceBlock(detail = '') {
@@ -209,7 +287,7 @@ async function upsertChildAlias({ memberUrl, authHeader, email, mergeFields }) {
     merge_fields: mergeFields,
   }
 
-  const firstTry = await upsertMember({
+  const firstTry = await upsertMemberWithFallback({
     memberUrl,
     authHeader,
     payload: basePayload,
@@ -231,7 +309,7 @@ async function upsertChildAlias({ memberUrl, authHeader, email, mergeFields }) {
     firstTry.detail,
   )
 
-  return upsertMember({
+  return upsertMemberWithFallback({
     memberUrl,
     authHeader,
     payload: {
@@ -304,6 +382,12 @@ export async function POST(request) {
   const baseUrl = `https://${serverPrefix}.api.mailchimp.com/3.0`
   const authHeader = `Basic ${Buffer.from(`anystring:${apiKey}`).toString('base64')}`
   const signupId = crypto.randomUUID()
+  const normalizedPhone = normalizePhone(trimmedPhone)
+  const normalizedZip = normalizeZip(trimmedZip)
+  const droppedFields = new Set()
+
+  // Keep the raw values here — the alert should show what the parent actually
+  // typed, not what we managed to salvage.
   const submission = {
     role: trimmedRole,
     name: trimmedName,
@@ -349,16 +433,16 @@ export async function POST(request) {
       const parentMergeFields = {
         FNAME,
         LNAME,
-        PHONE: trimmedPhone,
         ROLE: 'Parent',
         [MERGE.CHILD_COUNT]: childCount,
         [MERGE.CHILD_AGES]: childAges.join(', '),
         [MERGE.SIGNUP_ID]: signupId,
       }
 
-      if (trimmedZip) parentMergeFields.ZIP = trimmedZip
+      if (normalizedPhone) parentMergeFields.PHONE = normalizedPhone
+      if (normalizedZip) parentMergeFields.ZIP = normalizedZip
 
-      const parentResult = await upsertMember({
+      const parentResult = await upsertMemberWithFallback({
         memberUrl: parentUrl,
         authHeader,
         payload: {
@@ -374,7 +458,7 @@ export async function POST(request) {
         await notifyFailure({
           reason: 'Mailchimp rejected the parent record',
           status: parentResult.status,
-          detail: parentResult.detail,
+          detail: failureDetail(parentResult),
           signupId,
           submission,
         })
@@ -383,6 +467,8 @@ export async function POST(request) {
           { status: parentResult.status >= 500 ? 502 : 400 },
         )
       }
+
+      parentResult.dropped.forEach((field) => droppedFields.add(field))
 
       const parentTagged = await applyClinicTag(parentUrl, authHeader)
 
@@ -395,7 +481,6 @@ export async function POST(request) {
         const childName = splitName(child.name)
 
         const mergeFields = {
-          PHONE: trimmedPhone,
           ROLE: 'Player',
           AGE: String(child.age),
           [MERGE.PARENT_EMAIL]: trimmedEmail,
@@ -412,7 +497,8 @@ export async function POST(request) {
           mergeFields.LNAME = childName.LNAME
         }
 
-        if (trimmedZip) mergeFields.ZIP = trimmedZip
+        if (normalizedPhone) mergeFields.PHONE = normalizedPhone
+        if (normalizedZip) mergeFields.ZIP = normalizedZip
 
         const result = await upsertChildAlias({
           memberUrl,
@@ -430,6 +516,8 @@ export async function POST(request) {
           })
           continue
         }
+
+        result.dropped?.forEach((field) => droppedFields.add(field))
 
         const childTagged = await applyClinicTag(memberUrl, authHeader)
         if (!childTagged) untaggedChildren.push(childIndex)
@@ -482,6 +570,8 @@ export async function POST(request) {
         })
       }
 
+      await notifyDroppedFields({ droppedFields, signupId, submission })
+
       await sendLead()
       return Response.json({ success: true, registeredCount, childCount, metaEventId })
     }
@@ -489,11 +579,11 @@ export async function POST(request) {
     const mergeFields = {
       FNAME,
       LNAME,
-      PHONE: trimmedPhone,
       ROLE: trimmedRole,
     }
 
-    if (trimmedZip) mergeFields.ZIP = trimmedZip
+    if (normalizedPhone) mergeFields.PHONE = normalizedPhone
+    if (normalizedZip) mergeFields.ZIP = normalizedZip
 
     if (trimmedRole === 'Player') {
       const ageError = validatePlayerAge(age)
@@ -506,7 +596,7 @@ export async function POST(request) {
     const subscriberHash = getSubscriberHash(trimmedEmail)
     const memberUrl = `${baseUrl}/lists/${audienceId}/members/${subscriberHash}`
 
-    const result = await upsertMember({
+    const result = await upsertMemberWithFallback({
       memberUrl,
       authHeader,
       payload: {
@@ -522,7 +612,7 @@ export async function POST(request) {
       await notifyFailure({
         reason: `Mailchimp rejected the ${trimmedRole || 'member'} record`,
         status: result.status,
-        detail: result.detail,
+        detail: failureDetail(result),
         signupId,
         submission,
       })
@@ -531,6 +621,8 @@ export async function POST(request) {
         { status: result.status >= 500 ? 502 : 400 },
       )
     }
+
+    result.dropped.forEach((field) => droppedFields.add(field))
 
     const tagged = await applyClinicTag(memberUrl, authHeader)
 
@@ -542,6 +634,8 @@ export async function POST(request) {
         submission,
       })
     }
+
+    await notifyDroppedFields({ droppedFields, signupId, submission })
 
     await sendLead()
     return Response.json({ success: true, registeredCount: 1, childCount: 1, metaEventId })
