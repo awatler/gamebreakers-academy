@@ -47,20 +47,17 @@ export default function Home() {
             <p className="font-util text-base font-bold tracking-[0.08em] text-white/90 sm:text-lg">
               Prospect Park Parade Grounds, Field #5
             </p>
+            <p className="pt-2 font-display text-xl font-bold uppercase tracking-wide text-amber sm:text-2xl">
+              Sold Out
+            </p>
           </div>
 
           <button
-
             type="button"
-
             onClick={openSignupModal}
-
             className="mt-10 inline-flex h-[3.75rem] min-w-[10.5rem] items-center justify-center rounded-full bg-amber px-10 font-util text-[1.625rem] font-bold leading-none tracking-[0.08em] text-ink shadow-lg shadow-black/25 transition-all duration-200 ease-in-out hover:scale-[1.03] hover:bg-amber/90 hover:shadow-xl sm:min-w-[11.5rem] sm:px-12 sm:text-[1.8rem]"
-
           >
-
-            Sign Up
-
+            Stay Tuned
           </button>
 
           <p className="mt-10 font-display text-4xl font-bold uppercase tracking-wide text-forest sm:text-5xl md:text-6xl">

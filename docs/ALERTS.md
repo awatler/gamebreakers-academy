@@ -15,7 +15,7 @@ silently skips sending, so nothing breaks without them.
 | Mailchimp rejected the *role* record | Same, for a Player / Coach / Community Partner signup |
 | All N player records failed | Parent saved, no children did |
 | N of M player records failed | Partial signup, returns `502` |
-| Signup saved but the clinic tag failed | Contact exists but is **not** in the `Flag Football Clinic - Fall 2026` segment, so they are missing from the roster |
+| Signup saved but the Interest List tag failed | Contact exists but is **not** in the `Interest List - 2026` segment |
 | Unhandled error during signup | Anything thrown — includes the stack |
 
 Form validation errors (bad email format, missing age) do **not** send email. They

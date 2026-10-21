@@ -263,17 +263,19 @@ Update `InterestSignupModal.jsx` so `handleSubmit`:
 }
 ```
 
-The API creates **one Mailchimp row per child** (with that child's name in `FNAME`/`LNAME`), each tagged `Flag Football Clinic - Fall 2026`.
+The API creates **one Mailchimp row per child** (with that child's name in `FNAME`/`LNAME`).
+New form submissions are tagged `Interest List - 2026` (Fall Clinic registration is closed).
 
 ### Clinic headcount / roster
 
 Filter your audience (or export CSV) where:
 
-- Tag = `Flag Football Clinic - Fall 2026`
+- Tag = `Flag Football Clinic - Fall 2026` (historical Fall roster — no longer applied by the form)
 - `ROLE` = `Player`
-- `AGE` is between 7 and 14
 
-The row count = registered participants (child `Player` rows only). New rows show the child's name in `FNAME`/`LNAME`. Use `PEMAIL` and `SIGNUPID` on child rows to group siblings. Parents are stored separately at their real email with `ROLE = Parent`.
+Interest-list signups use tag `Interest List - 2026`. Use `PEMAIL` and `SIGNUPID` on
+child rows to group siblings. Parents are stored separately at their real email with
+`ROLE = Parent`.
 
 3. On success → show **"You're in!"** (and child count for parents)
 4. On error → show a friendly retry message

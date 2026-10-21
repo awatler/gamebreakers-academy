@@ -1,6 +1,6 @@
 # Site state — Brooklyn Gamebreakers
 
-Last updated: September 2026
+Last updated: October 2026
 
 ## Stack
 
@@ -12,7 +12,7 @@ Last updated: September 2026
 
 | Path | Page |
 |---|---|
-| `/` | Home — hero, mission, value cards, Fall Clinic signup modal |
+| `/` | Home — hero (Fall Clinic sold out), mission, value cards, interest-list modal |
 | `/summer-clinic-2026` | Summer Clinic 2026 — recap copy + photo gallery with lightbox |
 | `/team` | Meet the Team |
 | `/donate` | Donate — 501(c)(3) note, Venmo + Cash App links |
@@ -25,12 +25,14 @@ Last updated: September 2026
 - Suppressed on the pages in `NO_AUTO_OPEN_PATHS` (`Layout.jsx`) — currently the clinic
   gallery, where a popup would cover the photos a visitor came to see. Those pages carry
   their own CTA instead
-- Reopen via `SignupModalContext` + hero **Sign Up** button
-- API: `api/subscribe.js` → Mailchimp, tag `Flag Football Clinic - Fall 2026` only
+- Reopen via `SignupModalContext` + hero **Stay Tuned** button
+- API: `api/subscribe.js` → Mailchimp, tag `Interest List - 2026` only
+  (Fall Clinic registration is closed / sold out)
 
-**Status:** Fall flag football clinic is live — **Saturday, October 24th, 2026**,
-3PM–6PM, Prospect Park Parade Grounds Field #5. Hero and signup modal show Fall Clinic
-details. New Mailchimp signups get **only** the Fall Clinic tag.
+**Status:** Fall Clinic (**Saturday, October 24th, 2026**, 3PM–6PM, Field #5) is
+**sold out**. Site collects interest-list signups for future free community events.
+New Mailchimp contacts get **only** the `Interest List - 2026` tag — do not apply
+`Flag Football Clinic - Fall 2026` to new form submissions.
 
 ## Analytics
 

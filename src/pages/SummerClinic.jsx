@@ -107,17 +107,17 @@ export default function SummerClinic() {
       </section>
 
       <section className="mt-14 rounded-ui border border-border bg-seafoam px-6 py-10 text-center">
-        <h2 className="heading-display text-xl sm:text-2xl">Next up: Fall Clinic</h2>
+        <h2 className="heading-display text-xl sm:text-2xl">Fall Clinic is full</h2>
         <p className="mx-auto mt-3 max-w-xl text-sm leading-relaxed text-muted">
-          Flag football on Saturday, October 24th at Prospect Park Parade Grounds, Field #5 ·
-          3PM–6PM. Sign up to reserve your spot.
+          Saturday, October 24th at Prospect Park Parade Grounds, Field #5 · 3PM–6PM is sold out.
+          Join the list to hear about the next free community event.
         </p>
         <button
           type="button"
           onClick={openSignupModal}
           className="mt-6 inline-flex items-center justify-center rounded-full bg-amber px-8 py-3 font-util text-base font-bold tracking-[0.08em] text-ink shadow-md transition-all duration-200 ease-in-out hover:scale-[1.03] hover:bg-amber/90"
         >
-          Sign Up
+          Stay Tuned
         </button>
       </section>
 

@@ -1,12 +1,14 @@
 # Mailchimp signup — data model & conventions
 
-Last updated: October 2026 — Fall Clinic registrations (child names)
+Last updated: October 2026 — Fall Clinic sold out; interest list mode
 
 ## Current purpose
 
-The form and API register people for the **Fall 2026 flag football clinic**
-(Saturday, October 24th). New signups receive **only** the tag
-`Flag Football Clinic - Fall 2026`. The parent + child data model below is unchanged.
+Fall Clinic registration is **closed / sold out**. The form and API now collect
+interest-list signups for future free community events. New signups receive
+**only** the tag `Interest List - 2026` (do **not** apply
+`Flag Football Clinic - Fall 2026` to new submissions). The parent + child data
+model below is unchanged.
 
 ## Architecture decision (do not regress)
 
@@ -19,8 +21,8 @@ The form and API register people for the **Fall 2026 flag football clinic**
 
 - `{hash}` = first 8 chars of MD5(parent email)
 - `N` = 1-based child index within signup
-- Tag on **both** parent and child rows: `Flag Football Clinic - Fall 2026` only
-  (do not also apply `Interest List - 2026`)
+- Tag on **both** parent and child rows: `Interest List - 2026` only
+  (do not also apply `Flag Football Clinic - Fall 2026` to new form signups)
 - The `clinic-` alias prefix is intentionally unchanged — renaming it would create
   duplicate child rows for parents who already signed up, and would break campaign
   segments that exclude addresses containing `clinic-`
@@ -48,9 +50,9 @@ emails, phone numbers, or ages to that payload — Google prohibits PII.
 For `role === "Parent"`:
 
 1. Upsert **parent** at real email (`FNAME`/`LNAME` = parent name, `ROLE: Parent`, `CHCOUNT`, `CHLDAGES`, `SIGNUPID`)
-2. Apply Fall Clinic tag to parent
+2. Apply Interest List tag to parent
 3. For each child: upsert **child alias** with **child** `FNAME`/`LNAME` (split from child name), `ROLE: Player`, `AGE`, `PEMAIL`, `PNAME` (parent name), `CHINDEX`, `CHCOUNT`, `SIGNUPID`
-4. Apply Fall Clinic tag to each child
+4. Apply Interest List tag to each child
 5. Partial failure returns `502` if some children fail after parent succeeds
 
 For other roles: single upsert at submitter email (unchanged).
@@ -104,10 +106,10 @@ it to text in the Mailchimp dashboard would fix that.
 
 **Email campaigns:** segment `ROLE = Parent` OR exclude `Email Address` contains `clinic-`
 
-**Fall clinic (current):** rows tagged `Flag Football Clinic - Fall 2026`
+**Interest list (current form):** rows tagged `Interest List - 2026`
 
-**Interest list (historical):** rows tagged `Interest List - 2026` — stay-informed
-period between clinics; that tag is no longer applied to new signups
+**Fall clinic (closed):** rows tagged `Flag Football Clinic - Fall 2026` —
+registration closed; tag is no longer applied to new form signups
 
 **July clinic attendees:** rows tagged `Flag Football Clinic - July 2026` (historical —
 that tag is no longer applied to new signups)

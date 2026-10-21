@@ -11,18 +11,14 @@ const ROLE_OPTIONS = [
   { label: 'Community Partner', emoji: '🤝' },
 ]
 
-const CLINIC_DETAILS = [
-  { emoji: '📅', label: 'Date', value: 'Saturday, October 24th · 3PM–6PM' },
-  { emoji: '📍', label: 'Location', value: 'Prospect Park Parade Grounds, Field #5' },
-  { emoji: '🆓', label: 'Price', value: 'Free! (but donations are welcome)' },
-  { emoji: '🏆', label: 'Ages', value: '7-17' },
-]
+const WHATSAPP_GROUP_URL = 'https://chat.whatsapp.com/Gmn6Xc8sGSN7bGmTozezlY'
+const INSTAGRAM_URL = 'https://www.instagram.com/brooklyngamebreakers'
 
 const MAX_CHILDREN = 5
 
 const CONTACT_EMAIL = 'info@brooklyngamebreakers.com'
 
-const GENERIC_FAILURE = `Sorry, we couldn't complete your signup. Please email ${CONTACT_EMAIL} and we'll get you registered.`
+const GENERIC_FAILURE = `Sorry, we couldn't complete your signup. Please email ${CONTACT_EMAIL} and we'll get you on the list.`
 
 // Error copy from the API points people at the inbox, so make the address
 // tappable rather than leaving it as text a parent has to retype on a phone.
@@ -174,7 +170,7 @@ export default function InterestSignupModal({ isOpen, onClose }) {
       setSubmitted(true)
 
       trackEvent('generate_lead', {
-        method: 'clinic_signup_modal',
+        method: 'interest_list_modal',
         role,
         child_count: role === 'Parent' ? payload.children.length : 0,
       })
@@ -256,38 +252,42 @@ export default function InterestSignupModal({ isOpen, onClose }) {
 
         {!submitted ? (
           <>
-            <div className="flex items-start gap-2 pr-10">
-              <span className="shrink-0 pt-0.5 text-xl" aria-hidden>
-                🏈
-              </span>
-              <h2
-                id="interest-signup-title"
-                className="heading-display min-w-0 flex-1 text-sm leading-snug sm:text-base md:text-lg lg:whitespace-nowrap"
-              >
-                Join the Brooklyn Gamebreakers Flag Football Fall Clinic
-              </h2>
-            </div>
+            <h2
+              id="interest-signup-title"
+              className="pr-10 font-display text-[clamp(1.15rem,3.6vw,1.85rem)] font-bold uppercase leading-none tracking-[0.04em] text-ink whitespace-nowrap"
+            >
+              All Fall Clinic spots have been filled
+            </h2>
 
-            <p className="mt-3 text-sm text-muted">
-              Come down to learn flag football, make friends, and have a ton of fun!{' '}
-              <span aria-hidden>✨</span> Sign up to reserve your spot and receive more information.
+            <p className="mt-4 text-sm leading-relaxed text-muted sm:text-base">
+              We&apos;re sorry! Spots filled up quick so make sure not to miss your chance to join
+              our next clinic.
+              <br />
+              <br />
+              Fill out the form below to stay tuned for more events coming soon. You can also follow
+              us on{' '}
+              <a
+                href={INSTAGRAM_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="font-semibold text-forest hover:text-green-deep"
+              >
+                Instagram
+              </a>{' '}
+              and/or join our{' '}
+              <a
+                href={WHATSAPP_GROUP_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="font-semibold text-forest hover:text-green-deep"
+              >
+                WhatsApp group
+              </a>{' '}
+              to become part of the Gamebreaker community.
             </p>
 
-            <div className="mt-4 space-y-2 rounded-ui border border-border bg-seafoam px-4 py-3">
-              {CLINIC_DETAILS.map(({ emoji, label, value }) => (
-                <div key={label} className="flex gap-2 text-sm text-ink">
-                  <span className="mt-0.5 shrink-0 text-base" aria-hidden>
-                    {emoji}
-                  </span>
-                  <p>
-                    <span className="font-util font-bold text-green-deep">{label}:</span> {value}
-                  </p>
-                </div>
-              ))}
-            </div>
-
             <p className="mt-3 text-sm text-muted">
-              Questions?{' '}
+              Curious what a Gamebreakers clinic feels like?{' '}
               <Link
                 to="/summer-clinic-2026"
                 onClick={handleClose}
@@ -462,8 +462,7 @@ export default function InterestSignupModal({ isOpen, onClose }) {
                   )}
 
                   <p className="mt-2 text-xs text-muted">
-                    Names and ages help us plan groups and check players in. Add up to{' '}
-                    {MAX_CHILDREN} children.
+                    Names and ages help us plan future programs. Add up to {MAX_CHILDREN} children.
                   </p>
                 </div>
               )}
@@ -491,9 +490,9 @@ export default function InterestSignupModal({ isOpen, onClose }) {
               )}
 
               {contactError && (
-              <p className="text-sm font-medium text-red-600" role="alert">
-                <ErrorText message={contactError} />
-              </p>
+                <p className="text-sm font-medium text-red-600" role="alert">
+                  <ErrorText message={contactError} />
+                </p>
               )}
 
               <button
@@ -501,30 +500,49 @@ export default function InterestSignupModal({ isOpen, onClose }) {
                 disabled={isSubmitting}
                 className="mt-4 w-full rounded-full bg-amber px-4 py-3 font-util text-sm font-bold tracking-[0.06em] text-ink transition-colors hover:bg-amber/90 disabled:cursor-not-allowed disabled:opacity-60"
               >
-                {isSubmitting ? 'Signing up…' : "Let's Go!"}
+                {isSubmitting ? 'Signing up…' : 'Keep Me Posted'}
               </button>
             </form>
           </>
         ) : (
           <div className="pr-8">
             <h2 id="interest-signup-title" className="heading-display text-xl sm:text-2xl">
-              You&apos;re in! <span aria-hidden>🎉</span>
+              You&apos;re on the list! <span aria-hidden>🎉</span>
             </h2>
             {role === 'Parent' && registeredCount > 1 && (
               <p className="mt-3 text-sm font-semibold text-ink">
-                {registeredCount} children registered.
+                {registeredCount} players noted for future events.
               </p>
             )}
             {role === 'Parent' && registeredCount === 1 && (
-              <p className="mt-3 text-sm font-semibold text-ink">1 child registered.</p>
+              <p className="mt-3 text-sm font-semibold text-ink">
+                1 player noted for future events.
+              </p>
             )}
             <p className="mt-3 text-sm leading-relaxed text-muted">
-              We&apos;re excited to see you at the Fall Clinic on October 24th!{' '}
-              <span aria-hidden>🏈</span>
+              Thanks for your interest — we&apos;ll email you when the next free community event
+              opens up.
             </p>
             <p className="mt-3 text-sm leading-relaxed text-muted">
-              Stay tuned for more details by email. If you have cleats and gloves those are welcome
-              but not required.
+              Want updates even faster? Join our{' '}
+              <a
+                href={WHATSAPP_GROUP_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="font-semibold text-forest hover:text-green-deep"
+              >
+                WhatsApp group
+              </a>{' '}
+              and follow{' '}
+              <a
+                href={INSTAGRAM_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="font-semibold text-forest hover:text-green-deep"
+              >
+                @brooklyngamebreakers
+              </a>{' '}
+              on Instagram.
             </p>
             <p className="mt-3 text-sm leading-relaxed text-muted">
               Want to know more about what to expect?{' '}
@@ -538,23 +556,14 @@ export default function InterestSignupModal({ isOpen, onClose }) {
               .
             </p>
             <p className="mt-3 text-sm leading-relaxed text-muted">
-              Please contact{' '}
+              Questions? Email{' '}
               <a
-                href="mailto:info@brooklyngamebreakers.com"
+                href={`mailto:${CONTACT_EMAIL}`}
                 className="font-semibold text-forest hover:text-green-deep"
               >
-                info@brooklyngamebreakers.com
-              </a>{' '}
-              with any questions and make sure to follow{' '}
-              <a
-                href="https://www.instagram.com/brooklyngamebreakers"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="font-semibold text-forest hover:text-green-deep"
-              >
-                @brooklyngamebreakers
-              </a>{' '}
-              on social media for more information.
+                {CONTACT_EMAIL}
+              </a>
+              .
             </p>
             <button
               type="button"

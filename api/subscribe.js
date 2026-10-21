@@ -2,7 +2,8 @@ import crypto from 'crypto'
 
 import { sendMetaLead } from './meta-capi.js'
 
-const CLINIC_TAG = 'Flag Football Clinic - Fall 2026'
+// Fall Clinic is full — new form submissions join the stay-informed list only.
+const SIGNUP_TAG = 'Interest List - 2026'
 const MAX_CHILDREN = 5
 const FALLBACK_DOMAIN = 'brooklyngamebreakers.com'
 const CONTACT_EMAIL = 'info@brooklyngamebreakers.com'
@@ -11,8 +12,8 @@ const CONTACT_EMAIL = 'info@brooklyngamebreakers.com'
 // or compliance review") is meaningless to a parent and reads like a fault of
 // theirs. Send them somewhere useful instead; the raw detail goes to the alert
 // email, where it is actually actionable.
-const GENERIC_FAILURE = `Sorry, we couldn't complete your signup. Please email ${CONTACT_EMAIL} and we'll get you registered.`
-const EMAIL_REJECTED_FAILURE = `That email address was rejected. Please double-check it, or email ${CONTACT_EMAIL} and we'll sign you up.`
+const GENERIC_FAILURE = `Sorry, we couldn't complete your signup. Please email ${CONTACT_EMAIL} and we'll get you on the list.`
+const EMAIL_REJECTED_FAILURE = `That email address was rejected. Please double-check it, or email ${CONTACT_EMAIL} and we'll get you on the list.`
 
 function userFacingError(detail) {
   // Narrow on purpose: only redirect to the address field when Mailchimp is
@@ -319,7 +320,7 @@ async function upsertChildAlias({ memberUrl, authHeader, email, mergeFields }) {
   })
 }
 
-async function applyClinicTag(memberUrl, authHeader) {
+async function applySignupTag(memberUrl, authHeader) {
   try {
     const tagRes = await fetch(`${memberUrl}/tags`, {
       method: 'POST',
@@ -328,7 +329,7 @@ async function applyClinicTag(memberUrl, authHeader) {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        tags: [{ name: CLINIC_TAG, status: 'active' }],
+        tags: [{ name: SIGNUP_TAG, status: 'active' }],
       }),
     })
 
@@ -470,7 +471,7 @@ export async function POST(request) {
 
       parentResult.dropped.forEach((field) => droppedFields.add(field))
 
-      const parentTagged = await applyClinicTag(parentUrl, authHeader)
+      const parentTagged = await applySignupTag(parentUrl, authHeader)
 
       for (let index = 0; index < parsedChildren.length; index += 1) {
         const child = parsedChildren[index]
@@ -512,14 +513,14 @@ export async function POST(request) {
           childErrors.push(`child ${childIndex}: ${result.status} ${result.detail}`)
           failures.push({
             childIndex,
-            detail: `We could not save this player. Please email ${CONTACT_EMAIL} and we'll finish your signup.`,
+            detail: `We could not save this player. Please email ${CONTACT_EMAIL} and we'll finish adding you to the list.`,
           })
           continue
         }
 
         result.dropped?.forEach((field) => droppedFields.add(field))
 
-        const childTagged = await applyClinicTag(memberUrl, authHeader)
+        const childTagged = await applySignupTag(memberUrl, authHeader)
         if (!childTagged) untaggedChildren.push(childIndex)
       }
 
@@ -547,7 +548,7 @@ export async function POST(request) {
         })
         return Response.json(
           {
-            error: `We registered ${registeredCount} of ${childCount} children. Please email ${CONTACT_EMAIL} and we'll add the rest.`,
+            error: `We saved ${registeredCount} of ${childCount} players. Please email ${CONTACT_EMAIL} and we'll add the rest.`,
             registeredCount,
             childCount,
             failures,
@@ -556,11 +557,10 @@ export async function POST(request) {
         )
       }
 
-      // Untagged rows save fine but never show up in the clinic segment, so the
-      // family silently goes missing from the roster.
+      // Untagged rows save fine but never show up in the Interest List segment.
       if (!parentTagged || untaggedChildren.length > 0) {
         await notifyFailure({
-          reason: 'Signup saved but the clinic tag failed',
+          reason: 'Signup saved but the Interest List tag failed',
           status: 200,
           detail: `parent tagged: ${parentTagged}; untagged children: ${
             untaggedChildren.join(', ') || 'none'
@@ -624,11 +624,11 @@ export async function POST(request) {
 
     result.dropped.forEach((field) => droppedFields.add(field))
 
-    const tagged = await applyClinicTag(memberUrl, authHeader)
+    const tagged = await applySignupTag(memberUrl, authHeader)
 
     if (!tagged) {
       await notifyFailure({
-        reason: 'Signup saved but the clinic tag failed',
+        reason: 'Signup saved but the Interest List tag failed',
         status: 200,
         signupId,
         submission,

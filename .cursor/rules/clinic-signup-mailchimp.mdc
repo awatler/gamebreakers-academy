@@ -1,5 +1,5 @@
 ---
-description: Fall Clinic signup form and Mailchimp integration conventions
+description: Interest-list signup form and Mailchimp integration conventions
 globs:
   - api/subscribe.js
   - src/components/InterestSignupModal.jsx
@@ -12,8 +12,8 @@ alwaysApply: false
 
 Read `docs/agent/MAILCHIMP-SIGNUP.md` before changing the signup form or subscribe API.
 
-The form currently registers people for the **Fall 2026** flag football clinic
-(tag `Flag Football Clinic - Fall 2026` only — do not also apply the interest list tag).
+Fall Clinic registration is **sold out**. The form currently collects interest-list
+signups (tag `Interest List - 2026` only — do not also apply the Fall Clinic tag).
 
 ## Data model (parent + child)
 
@@ -33,9 +33,9 @@ are created automatically by the API, so prefer a tag for new categorization.
 
 ## Segments
 
-- Fall clinic: `Flag Football Clinic - Fall 2026` tag (current form applies this only)
+- Interest list (current): `Interest List - 2026` tag — form applies this only
+- Fall clinic: `Flag Football Clinic - Fall 2026` tag (registration closed; no longer applied)
 - July clinic attendees: `Flag Football Clinic - July 2026` tag (historical, no longer applied)
-- Interest list: `Interest List - 2026` tag (historical stay-informed period; no longer applied)
 - Age counts: `ROLE = Player` (child alias rows only)
 - Campaigns: `ROLE = Parent` or exclude emails containing `clinic-`
 
