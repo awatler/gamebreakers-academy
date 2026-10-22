@@ -274,7 +274,7 @@ export default function InterestSignupModal({ isOpen, onClose }) {
               >
                 Instagram
               </a>{' '}
-              and/or join our{' '}
+              and join our{' '}
               <a
                 href={WHATSAPP_GROUP_URL}
                 target="_blank"
