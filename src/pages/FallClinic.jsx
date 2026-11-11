@@ -8,7 +8,7 @@ import { trackEvent } from '../lib/analytics'
 
 const facts = [
   { icon: CalendarDays, label: 'Saturday, October 24, 2026' },
-  { icon: MapPin, label: 'Prospect Park · Field #5' },
+  { icon: MapPin, label: 'Brooklyn, NY' },
   { icon: Users, label: 'Ages 7–17' },
 ]
 
@@ -60,14 +60,15 @@ export default function FallClinic() {
 
       <div className="mx-auto mt-10 max-w-3xl space-y-4 text-base leading-relaxed text-muted">
         <p>
-          On a clear October Saturday we took over Field #5 at Prospect Park Parade Grounds for three
-          hours of free flag football. Players worked warmups and footwork, then moved into throws,
-          catches, and live scrimmages while coaches stayed on every rep.
+          Our second free flag football clinic brought roughly twice as many players as July — and a
+          wider age range, from 7 all the way to 17. Returning coaches and first-time families filled
+          Prospect Park Parade Grounds Field #5 for an afternoon of warmups, skill stations, and
+          live scrimmages that still felt personal even at the bigger scale.
         </p>
         <p>
-          What stuck with us wasn&apos;t just the leap for a ball or the open-field runs — it was the
-          high-fives after a tough drill, the huddles that got loud, and kids who showed up as
-          strangers and left as a team. Here&apos;s how the afternoon looked.
+          What we wanted to prove was simple: growth doesn&apos;t have to dilute the standard. The
+          same sharp coaching, the same energy in the huddles, and the same kids leaving better than
+          they arrived — just with a lot more of them on the field. Here&apos;s Fall Clinic.
         </p>
       </div>
 
