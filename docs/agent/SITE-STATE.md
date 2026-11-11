@@ -1,6 +1,6 @@
 # Site state — Brooklyn Gamebreakers
 
-Last updated: October 2026
+Last updated: November 2026
 
 ## Stack
 
@@ -13,6 +13,7 @@ Last updated: October 2026
 | Path | Page |
 |---|---|
 | `/` | Home — hero (Fall Clinic sold out), mission, value cards, interest-list modal |
+| `/fall-clinic-2026` | Fall Clinic 2026 — recap copy + photo gallery with lightbox |
 | `/summer-clinic-2026` | Summer Clinic 2026 — recap copy + photo gallery with lightbox |
 | `/team` | Meet the Team |
 | `/donate` | Donate — 501(c)(3) note, Venmo + Cash App links |
@@ -48,11 +49,12 @@ New Mailchimp contacts get **only** the `Interest List - 2026` tag — do not ap
   - Browser `fbq('track','Lead')` uses the same `metaEventId` for dedupe
   - Hashed email/phone/name/zip only — never child ages
 
-## Clinic gallery
+## Clinic galleries
 
-- Photos live in `public/images/clinic-2026/{thumb,full}/`, metadata in `src/data/clinicGallery.js`
-- Regenerate from local originals with `node scripts/build-clinic-gallery.mjs` (reads `Clinic Pics/`,
-  which is gitignored and local-only)
+- **Summer:** `public/images/clinic-2026/{thumb,full}/`, metadata in `src/data/clinicGallery.js`
+  — regenerate with `node scripts/build-clinic-gallery.mjs` from gitignored `Clinic Pics/`
+- **Fall:** `public/images/fall-clinic-2026/{thumb,full}/`, metadata in `src/data/fallClinicGallery.js`
+  — regenerate with `node scripts/build-fall-clinic-gallery.mjs` from gitignored `Fall Clinic Pics/`
 - Alt text describes the moment and never names a child — families consented to photos, not to
   their kids being identifiable by name
 
@@ -63,9 +65,11 @@ src/components/InterestSignupModal.jsx — interest list form UI
 src/components/Layout.jsx            — modal auto-open + per-page suppression
 src/context/SignupModalContext.jsx
 src/lib/analytics.js                 — GA4 event wrapper
-src/pages/SummerClinic.jsx           — clinic recap page
+src/pages/FallClinic.jsx             — Fall Clinic 2026 recap page
+src/pages/SummerClinic.jsx           — Summer Clinic 2026 recap page
 src/components/PhotoLightbox.jsx     — gallery lightbox
-scripts/build-clinic-gallery.mjs     — image optimization for the gallery
+scripts/build-clinic-gallery.mjs     — Summer image optimization
+scripts/build-fall-clinic-gallery.mjs — Fall image optimization
 api/subscribe.js                     — Mailchimp integration
 api/env-check.js                     — debug Mailchimp env (production)
 MAILCHIMP-SETUP.md                   — Mailchimp dashboard setup guide
