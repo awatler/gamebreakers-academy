@@ -4,6 +4,7 @@ import Home from './pages/Home'
 import Team from './pages/Team'
 import SummerClinic from './pages/SummerClinic'
 import FallClinic from './pages/FallClinic'
+import PhotoGallery from './pages/PhotoGallery'
 import Donate from './pages/Donate'
 import Privacy from './pages/Privacy'
 
@@ -15,6 +16,7 @@ function App() {
         <Route path="/team" element={<Team />} />
         <Route path="/summer-clinic-2026" element={<SummerClinic />} />
         <Route path="/fall-clinic-2026" element={<FallClinic />} />
+        <Route path="/gallery" element={<PhotoGallery />} />
         <Route path="/donate" element={<Donate />} />
         <Route path="/privacy" element={<Privacy />} />
       </Routes>

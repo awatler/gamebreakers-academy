@@ -15,6 +15,7 @@ Last updated: November 2026
 | `/` | Home — hero (Fall Clinic sold out), mission, value cards, interest-list modal |
 | `/fall-clinic-2026` | Fall Clinic 2026 — recap copy + photo gallery with lightbox |
 | `/summer-clinic-2026` | Summer Clinic 2026 — recap copy + photo gallery with lightbox |
+| `/gallery` | Photo Gallery — full Fall + Summer archive (filters + lightbox) |
 | `/team` | Meet the Team |
 | `/donate` | Donate — 501(c)(3) note, Venmo + Cash App links |
 | `/privacy` | Privacy (footer only) |
@@ -51,12 +52,15 @@ New Mailchimp contacts get **only** the `Interest List - 2026` tag — do not ap
 
 ## Clinic galleries
 
-- **Summer:** `public/images/clinic-2026/{thumb,full}/`, metadata in `src/data/clinicGallery.js`
+- **Summer curated:** `public/images/clinic-2026/{thumb,full}/`, metadata in `src/data/clinicGallery.js`
   — regenerate with `node scripts/build-clinic-gallery.mjs` from gitignored `Clinic Pics/`
-- **Fall:** `public/images/fall-clinic-2026/{thumb,full}/`, metadata in `src/data/fallClinicGallery.js`
+- **Fall curated:** `public/images/fall-clinic-2026/{thumb,full}/`, metadata in `src/data/fallClinicGallery.js`
   — regenerate with `node scripts/build-fall-clinic-gallery.mjs` from gitignored `Fall Clinic Pics/`
-- Alt text describes the moment and never names a child — families consented to photos, not to
-  their kids being identifiable by name
+- **Full archive:** `public/images/gallery/{thumb,full}/`, metadata in `src/data/photoGallery.js`
+  — regenerate with `node scripts/build-photo-gallery.mjs` (dedupes Fall + Summer originals; never
+  uses player-folder names in IDs or alt text)
+- Alt text describes the moment / stays generic and never names a child — families consented to
+  photos, not to their kids being identifiable by name
 
 ## Key files
 
@@ -67,9 +71,11 @@ src/context/SignupModalContext.jsx
 src/lib/analytics.js                 — GA4 event wrapper
 src/pages/FallClinic.jsx             — Fall Clinic 2026 recap page
 src/pages/SummerClinic.jsx           — Summer Clinic 2026 recap page
+src/pages/PhotoGallery.jsx           — full photo archive
 src/components/PhotoLightbox.jsx     — gallery lightbox
-scripts/build-clinic-gallery.mjs     — Summer image optimization
-scripts/build-fall-clinic-gallery.mjs — Fall image optimization
+scripts/build-clinic-gallery.mjs     — Summer curated image optimization
+scripts/build-fall-clinic-gallery.mjs — Fall curated image optimization
+scripts/build-photo-gallery.mjs      — full archive optimization + dedupe
 api/subscribe.js                     — Mailchimp integration
 api/env-check.js                     — debug Mailchimp env (production)
 MAILCHIMP-SETUP.md                   — Mailchimp dashboard setup guide

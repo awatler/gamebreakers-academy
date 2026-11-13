@@ -1,4 +1,5 @@
 import { useRef, useState } from 'react'
+import { Link } from 'react-router-dom'
 import { CalendarDays, MapPin, Users } from 'lucide-react'
 
 import PhotoLightbox from '../components/PhotoLightbox'
@@ -76,7 +77,11 @@ export default function SummerClinic() {
           From the Field
         </h2>
         <p className="mt-2 text-sm text-muted">
-          More photos from the day. Select any photo to view it larger.
+          Highlights from the day. Select any photo to view it larger, or{' '}
+          <Link to="/gallery" className="font-semibold text-forest underline-offset-2 hover:underline">
+            browse the full photo gallery
+          </Link>
+          .
         </p>
 
         <ul className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">

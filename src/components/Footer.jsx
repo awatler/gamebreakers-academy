@@ -10,6 +10,7 @@ const navLinks = [
   { to: '/', label: 'Home' },
   { to: '/fall-clinic-2026', label: 'Fall Clinic 2026' },
   { to: '/summer-clinic-2026', label: 'Summer Clinic 2026' },
+  { to: '/gallery', label: 'Photo Gallery' },
   { to: '/team', label: 'Team' },
   { to: '/donate', label: 'Donate' },
   { to: '/privacy', label: 'Privacy' },
